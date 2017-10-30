@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.CaInfoMapper">
+	<select id="selectCaInfoListByPage" resultType="com.boss.core.db.CaInfo">
+		SELECT 
+					<include refid="select_column_list"/>
+		FROM 
+					d_ca_info
+	</select>
+	<sql id="select_column_list">
+					id,
+					username,
+					valid_since,
+					expire_since
+	</sql>
+</mapper>
