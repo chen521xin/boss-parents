@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.user.mapper.BalanceMapper">
+
+	<!-- 增加账户 -->
+	<insert id="insertBalance" parameterType="com.boss.core.db.BalanceInfo">
+		INSERT INTO 
+		j_balance 
+					(id
+					,create_time
+					,create_by
+					,last_update_time
+					,last_update_by
+					,rowstate
+					,`version`
+					,user_id
+					,account_num
+					,total_balance)
+		VALUES 
+					(#{id}
+					,#{createTime}
+					,#{createBy}
+					,#{lastUpdateTime}
+					,#{lastUpdateBy}
+					,#{rowstate}
+					,#{version}
+					,#{userId}
+					,#{accountNum}
+					,#{totalBalance})
+
+	</insert>
+</mapper>

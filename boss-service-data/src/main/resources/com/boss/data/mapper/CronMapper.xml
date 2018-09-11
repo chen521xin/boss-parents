@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.CronMapper">
+	
+	<select id="selectCron"  resultType="com.boss.core.db.Cron">
+		SELECT 
+	    		 id
+	    		,create_by
+	    		,create_time
+	    		,last_update_by
+	    		,last_update_time
+	    		,cron
+        FROM 
+		    	j_cron
+	</select>
+
+		<insert id="insertCron" parameterType="com.boss.core.db.Cron">
+		INSERT INTO j_product_info_list 
+					(id,create_by,create_time,last_update_by,last_update_time,rowstate,VERSION,cron,module_type)
+		VALUES 
+					(
+					#{id},#{createBy},#{createTime},#{lastUpdateBy},#{lastUpdateTime},#{rowstate},#{version},#{cron},#{moduleType}
+					)
+	   </insert>
+	
+	   <update id="updateCron" parameterType="com.boss.core.db.Cron">
+	   
+		UPDATE j_corn 
+		SET  
+		
+				last_update_by = #{lastUpdateBy}
+				,last_update_time = #{lastUpdateTime}
+				,cron = #{cron}
+		WHERE 
+				id=#{id}
+	   </update>
+	   
+	     
+	   <delete id="deleteCorn" parameterType="java.lang.String">
+	   
+		DELETE FROM j_cron where id=#{id}
+	   </delete>
+</mapper>

@@ -1,3 +1,11 @@
+/*###################################################################
+ *#                                                                 #       
+ *#                          Copyright(c) 2018 by                   #
+ *#                            shanghai,China                       #
+ *#                                                                 #
+ *#                                                                 #
+ *###################################################################
+ */
 package com.boss.spring;
 
 
@@ -5,7 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Created by Ace on 2017/6/2.
+ * Created by chenxinxin on 2017/6/2.
  */
 @SpringBootApplication
 public class GateBootstrap {

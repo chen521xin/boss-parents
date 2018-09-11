@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<excels>
+  <excel id="details">
+     <column>保单号</column>
+     <column>协议书编号</column>
+     <column>被保险人</column>
+     <column>凭证填写日期</column>
+     <column>本车保额（元）</column>
+     <column>收货单位</column>
+     <column>收货单位电话</column>
+     <column>货物名称</column>
+     <column>驾驶员</column>
+     <column>货物重量</column>
+     <column>货物数量</column>
+     <column>司机驾驶证号</column>
+     <column>发车日期</column>
+     <column>运单号</column>
+     <column>司机电话</column>
+     <column>起运地</column>
+     <column>目的地</column>
+     <column>车牌号</column>
+     <column>挂车号</column>
+  </excel>
+    <excel id="policy">
+     <column>保险公司名称</column>
+     <column>保单状态</column>
+     <column>保单号</column>
+     <column>被保险人名称</column>
+     <column>保单起始日期</column>
+     <column>保单结束日期</column>
+     <column>最高投保金额(万)</column>
+     <column>总车次</column>
+     <column>已发车次</column>
+     <column>未发车次</column>
+     <column>总保额</column>
+     <column>已发保额</column>
+     <column>未发保额</column>
+     <column>用户</column>
+     <column>最后填单时间</column>
+     <column>一级代理</column>
+     <column>二级代理</column>
+     <column>保费金额</column>
+     <column>缴费金额</column>
+  </excel>
+</excels>

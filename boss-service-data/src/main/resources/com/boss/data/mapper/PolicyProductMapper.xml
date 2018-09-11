@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.PolicyProductMapper">
+	<select id="getAll" resultType="com.boss.core.db.PolicyProduct">
+		SELECT 
+			id,
+			product_name
+		FROM 
+			j_policy_product
+		WHERE 
+			ROWSTATE = 1
+		ORDER BY last_update_by DESC
+	</select>
+	<select id = "getByInsurcompId" parameterType="java.lang.String" resultType="com.boss.core.db.PolicyProduct">
+	SELECT
+		id,
+		product_name,
+		product_type_Value
+	FROM
+		j_policy_product
+	WHERE
+		rowstate = 1
+	AND
+		comp_id = #{id}
+	</select>
+	<select id="findByPage" parameterType="com.boss.core.db.PolicyProduct" resultType="com.boss.core.db.PolicyProduct">
+	SELECT
+				 product.id
+				,product.product_name
+				,product.amount
+				,product.product_type_value
+				,product.policy_infos
+				,comp.full_name
+				,comp.id compId
+	FROM 
+				j_policy_product product
+	INNER JOIN 		
+				j_insurcomp comp			
+	ON 
+				comp.id = product.comp_id 
+	WHERE
+				product.rowstate = 1
+			<if test="id != null and id != ''">
+				AND product.id = #{id}
+			</if>
+			<if test=" fullName != null and fullName != ''">
+				AND  LOCATE(#{fullName},comp.full_name)
+			</if>
+			<if test=" productName != null and productName != ''"> 
+			 	AND LOCATE(#{productName},product.product_name)
+			</if>
+			<if test=" productTypeValue != null and productTypeValue != ''">
+				AND product_type_value = #{productTypeValue}
+			</if>
+	ORDER BY
+		product.last_update_time 
+	DESC
+	</select>
+	<insert id="insertPolicyProduct" parameterType="com.boss.core.db.PolicyProduct">
+		INSERT 
+		INTO 
+			J_POLICY_PRODUCT 
+			(
+			id
+			,create_time
+			,create_by
+			,last_update_time
+			,last_update_by
+			,rowstate
+			,version
+			,comp_id
+			,product_name
+			,product_type_value
+			,amount
+			,policy_infos
+			)
+		VALUE
+			(
+			#{id}
+			,#{createTime}
+			,#{createBy}
+			,#{lastUpdateTime}
+			,#{lastUpdateBy}
+			,#{rowstate}
+			,#{version}
+			,#{compId}
+			,#{productName}
+			,#{productTypeValue}
+			,#{amount}
+			,#{policyInfos}
+			)
+	</insert>
+	<update id="updatePolicyProduct" parameterType="com.boss.core.db.PolicyProduct">
+		UPDATE 
+			J_POLICY_PRODUCT 
+		SET 
+			last_update_time = #{lastUpdateTime}
+			,last_update_by = #{lastUpdateBy}
+			<if test=" compId != null">
+			,COMP_ID = #{compId}
+			</if>
+			<if test="productName != null">
+			,PRODUCT_NAME = #{productName}
+			</if>
+			<if test="productTypeValue != null">
+			,product_type_value = #{productTypeValue}
+			</if>
+			<if test="amount != null">
+			,amount = #{amount}
+			</if>
+			<if test="policyInfos != null">
+			,policy_infos = #{policyInfos}
+			</if>		
+		WHERE 
+			id = #{id}
+	</update>
+	<delete id="deletePolicyProduct" parameterType="java.lang.String">
+		UPDATE 
+			J_POLICY_PRODUCT
+		SET
+			ROWSTATE = 2
+		WHERE 
+			ID = #{id}
+	</delete>
+</mapper>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.ecargo.mapper.BalanceMapper">
+
+    <sql id="select_column_where">
+       <if test="fullName != null and fullName != '' ">
+			AND LOCATE(#{fullName},u.full_name)
+		</if>			
+
+	   <if test="startBalance != null and startBalance != '' ">
+			AND b.total_balance &gt;= ${startBalance}
+	   </if>
+	   <if test="endBalance != null and endBalance != '' ">
+			AND b.total_balance &lt;= ${endBalance}
+		</if>
+    </sql>
+   <!-- 分页查询  管理员 -->
+	<select id="queryBalanceByPage" parameterType="com.boss.core.db.BalanceInfo" resultType="com.boss.core.db.BalanceInfo">
+		SELECT 
+					b.id
+					,b.user_id
+					,u.username
+					,u.full_name
+					,b.total_balance 
+		FROM 
+					j_balance b 
+		INNER JOIN 
+					j_user u 
+		ON 
+					b.user_id = u.id
+		AND         
+		            b.rowstate = 1 
+		AND
+					u.rowstate = 1		
+		<include refid="select_column_where"/>
+		order by b.last_update_time desc
+	</select>
+	   <!-- 分页查询  代理角色-->
+	<select id="queryBalanceByPageAndProxy" parameterType="com.boss.core.db.BalanceInfo" resultType="com.boss.core.db.BalanceInfo">
+		SELECT 
+					b.id
+					,b.user_id
+					,u.username
+					,b.total_balance 
+		FROM 
+					j_balance b 
+		INNER JOIN 
+					j_user u 
+		ON 
+					b.user_id=u.id
+		AND
+					u.parent_id=#{userId}
+	    AND
+	                u.rowstate = 1
+	    AND
+	                b.rowstate=1			
+		INNER JOIN 
+					j_user u2 
+		ON 
+					u2.id=u.id
+        AND 
+        			u2.parent_id=u.parent_id			
+		<include refid="select_column_where"/>
+		order by b.last_update_time desc
+	</select>
+	 <!-- 分页查询 -->
+	<select id="queryBalanceByUserId" parameterType="com.boss.core.db.BalanceInfo" resultType="com.boss.core.db.BalanceInfo">
+		SELECT 
+					
+					 user_id
+					,total_balance
+					,id
+		FROM 
+					j_balance 
+		WHERE
+		            user_id = #{userId}
+		AND
+		            account_num=#{accountNum}
+	</select>
+
+	<update id="updateBalance" parameterType="com.boss.core.db.BalanceInfo">
+	UPDATE j_balance SET 
+					last_update_time=#{lastUpdateTime}
+					,last_update_by=#{lastUpdateBy}
+					,total_balance=#{totalBalance}
+    WHERE 
+    				user_id=#{userId} 
+    AND
+    				account_num=#{accountNum}
+	</update>
+	 	<!-- 增加账户 -->
+	<insert id="insertBalance" parameterType="com.boss.core.db.BalanceInfo">
+		INSERT INTO 
+		j_balance 
+					(id
+					,create_time
+					,create_by
+					,last_update_time
+					,last_update_by
+					,rowstate
+					,`version`
+					,user_id
+					,account_num
+					,total_balance)
+		VALUES 
+					(#{id}
+					,#{createTime}
+					,#{createBy}
+					,#{lastUpdateTime}
+					,#{lastUpdateBy}
+					,#{rowstate}
+					,#{version}
+					,#{userId}
+					,#{accountNum}
+					,#{totalBalance})
+
+	</insert>
+</mapper>

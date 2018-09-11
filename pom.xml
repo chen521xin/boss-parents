@@ -5,51 +5,173 @@
 
 	<groupId>com.sse.boss</groupId>
 	<artifactId>boss-parents</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.3.RELEASE</version>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-parent</artifactId>
+		<version>Dalston.RELEASE</version>
+		<relativePath></relativePath>
 	</parent>
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<spring-cloud.version>Dalston.SR3</spring-cloud.version>
+		<maven.site.skip>true</maven.site.skip>
+		<spring-cloud.version>Dalston.RELEASE</spring-cloud.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- <docker.image.prefix>hub.bosscloud.com</docker.image.prefix> -->
+		<docker.image.prefix>192.168.0.162:5000</docker.image.prefix>
+		<docker.skip.build>false</docker.skip.build>
+		<docker.registryUrl>https://hub.bosscloud.com</docker.registryUrl>
+		<!-- <docker.dockerHost>http://192.168.0.162:5000</docker.dockerHost> -->
+		<docker.serverId>docker-hub</docker.serverId>
+		<project.scm.id>boss-scm-server</project.scm.id>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<nexus.public.url>http://192.168.0.162:8081/repository/maven-public/</nexus.public.url>
+		<nexus.releases.url>http://192.168.0.162:8081/repository/maven-releases/</nexus.releases.url>
+		<nexus.snapshots.url>http://192.168.0.162:8081/repository/maven-snapshots/</nexus.snapshots.url>
 	</properties>
+
+
+
+	<build>
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<skipDockerBuild>true</skipDockerBuild><!-- 跳过构建 ，为false为不跳过，也就是执行镜像构建；为true，跳过构建 -->
+						<dockerHost>${docker.dockerHost}</dockerHost><!-- docker的主机地址 -->
+						<imageName>${docker.image.prefix}/${project.artifactId}</imageName> <!-- 镜像名字 -->
+						<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory><!-- 
+							Dockerfile工作目录 -->
+
+						<resources>
+							<resource><!-- 拷贝到Dockerfile工作目录的资源，此处是将生成的jar文件拷贝过去，本例中此处生成的jar文件为config-1.0.0-SNAPSHOT.jar -->
+								<targetPath>/</targetPath>
+								<directory>${project.build.directory}</directory>
+							</resource>
+						</resources>
+
+						<forceTags>true</forceTags><!-- 强制docker在每次新的构建上覆盖镜像tags，可配置foreceTags -->
+						<imageTags>
+							<imageTag>${project.version}</imageTag>
+							<imageTag>latest</imageTag>
+						</imageTags>
+
+						<registryUrl>${docker.registryUrl}</registryUrl>
+						<serverId>${docker.serverId}</serverId>
+
+					</configuration>
+					<executions>
+						<execution>
+							<id>build-image</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>build</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>push-image-latest</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>push</goal>
+							</goals>
+							<configuration>
+								<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+							</configuration>
+						</execution>
+						<execution>
+							<id>push-image-version</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>push</goal>
+							</goals>
+							<configuration>
+								<imageName>${docker.image.prefix}/${project.artifactId}:${project.version}</imageName>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+
+				</plugin>
+
+			</plugins>
+
+		</pluginManagement>
+	</build>
+
 	<modules>
-       
-        
-		 
-        <module>boss-batch</module>
-        <module>boss-config</module>
-        <module>boss-model</module>
-        <module>boss-service-data</module>
-        <module>boss-service-user</module>
-        <module>boss-spring</module>
-        <module>boss-website</module>
-        
-        
-        
-        <module>boss-service-utils</module>
-        <module>boss-service-api</module>
-        <module>boss-dbaccess</module>
-        <module>ufms-client</module>
-        <module>ufms-model</module>
-        <module>ufms-util</module>
+		<module>boss-service-api</module>
+		<module>boss-service-data</module>
+		<module>boss-config</module>
+		<module>boss-model</module>
+		<module>boss-service-utils</module>
+		<module>boss-spring</module>
+		<module>boss-dbaccess</module>
+		<module>boss-service-user</module>
+		<module>boss-service-ecargo</module>
 	</modules>
-    <packaging>pom</packaging>
-    <!--依赖管理，用于管理spring-cloud的依赖，其中Camden.SR3是版本号-->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Camden.SR3</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<scm>
+		<url>http://192.168.0.161:8888/root/boss</url>
+		<connection>scm:http://192.168.0.161:8888/root/boss.git</connection>
+		<developerConnection>scm:http://192.168.0.161:8888/root/boss.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+	</dependencies>
+
+
+	<distributionManagement>
+		<repository>
+			<id>boss-releases</id>
+			<url>${nexus.releases.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>boss-snapshots</id>
+			<url>${nexus.snapshots.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bossdev</id>
+			<name>boss dev</name>
+			<url>${nexus.public.url}</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<repositories>
+		<repository>
+			<id>bossdev</id>
+			<name>boss dev</name>
+			<url>${nexus.public.url}</url>
+		</repository>
+	</repositories>
 </project>

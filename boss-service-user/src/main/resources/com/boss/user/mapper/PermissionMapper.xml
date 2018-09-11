@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.user.mapper.PermissionMapper">
+
+	<insert id="addPermission" parameterType="com.boss.core.db.PermissionInfo">
+		INSERT  INTO `j_permission`
+		   (`ID`,`CREATE_TIME`,`CREATE_BY`,`LAST_UPDATE_TIME`,`LAST_UPDATE_BY`,`ROWSTATE`,`VERSION`,`ROLE_ID`,`RESOURCE_ID`,`DEFAULT_VALUE`)
+		   VALUES (#{id}, #{createTime},#{createBy}, #{lastUpdateTime},#{lastUpdateBy},#{rowstate},#{version},#{roleId},#{resource_id},#{default_value})
+	</insert>
+	
+	<delete id="deletePermissionInfo" parameterType="java.lang.String">
+		DELETE from j_permission where id=#{id}
+	</delete>
+	
+	<select id="selectPermissionIdByRoleId" parameterType="java.lang.String">
+	    SELECT id from j_permission WHERE role_id=#{roleId}
+	</select>
+</mapper>

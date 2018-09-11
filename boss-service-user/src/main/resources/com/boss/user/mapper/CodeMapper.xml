@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.user.mapper.CodeMapper">
+	<select id="findParentCodeAll" parameterType="com.boss.core.pojo.CodePojo" resultType="com.boss.core.db.Code">
+		SELECT ID,NAME,VALUE FROM J_CODE WHERE PID = ''
+		<if test="parentName != null">
+			AND NAME=#{parentName}
+		</if>
+	</select>
+	<select id="findCodeAll" parameterType="com.boss.core.db.Code" resultType="com.boss.core.db.Code" >
+		SELECT * FROM J_CODE
+	</select>
+	
+	<insert id="addCode" parameterType="com.boss.core.db.Code">
+		<choose>
+			<when test="pid == null">
+				INSERT INTO j_code VALUES(#{id},NOW(),'system',NOW(),'system',1,1,#{name},#{value},#{index},NULL,NULL)
+			</when>
+			<otherwise>
+				INSERT INTO j_code VALUES(#{id},NOW(),'system',NOW(),'system',1,1,#{name},#{value},#{index},#{pid},NULL)
+			</otherwise>
+		</choose>
+	</insert>
+	
+	<update id="updateCode" parameterType="com.boss.core.db.Code">
+	 	UPDATE J_CODE SET LAST_UPDATE_TIME=NOW(),LAST_UPDATE_BY='system',NAME=#{name},VALUE=#{value} WHERE ID=#{id}
+	</update>
+	
+	<delete id="deleteCode" parameterType="java.lang.String">
+		DELETE FROM J_CODE WHERE ID=#{id} OR PID=#{id}
+	</delete>
+</mapper>

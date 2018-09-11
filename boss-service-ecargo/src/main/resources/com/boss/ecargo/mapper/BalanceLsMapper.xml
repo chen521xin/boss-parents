@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.ecargo.mapper.BalanceLsMapper">
+
+
+	<!-- 增加账户 -->
+	<insert id="insertBalanceLs" parameterType="com.boss.core.db.BalanceLsInfo">
+		INSERT INTO 
+		j_balance_ls 
+						(id
+						,create_time
+						,create_by
+						,last_update_time
+						,last_update_by
+						,rowstate
+						,`version`
+						,balance_id
+						,module
+						,before_balance
+						,fse
+						,after_balance
+						,direction_of
+						,ecargo_policy_no
+						)
+		VALUES (
+						#{id}
+						,#{createTime}
+						,#{createBy}
+						,#{lastUpdateTime}
+						,#{lastUpdateBy}
+						,#{rowstate}
+						,#{version}
+						,#{balanceId}
+						,#{module}
+						,#{beforeBalance}
+						,#{fse}
+						,#{afterBalance}
+						,#{directionOf}
+						,#{ecargoPolicyNo}
+						)
+	</insert>
+	<select id="selectBalanceLs" parameterType="com.boss.core.db.BalanceLsInfo" resultType="com.boss.core.db.BalanceLsInfo">
+	SELECT  
+	       				 module
+	       				 ,DATE_FORMAT(last_update_time,'%Y-%m-%d %k:%i:%s')  updateDate
+	       				,`before_balance`
+	      				,`fse`
+	       				,`after_balance`
+	       				,`direction_of` 
+	       				,ecargo_policy_no
+	       				,create_by
+	       				,id
+    FROM 
+	       				j_balance_ls 
+	 WHERE 
+	                    rowstate=1
+	   AND    				
+	                    balance_id = #{balanceId}
+	   <if test="startDate != null and startDate != '' ">
+			AND DATE_FORMAT(last_update_time,'%Y-%m-%d') &gt;= #{startDate}
+	   </if>
+	   <if test="endDate != null and endDate != '' ">
+			AND DATE_FORMAT(last_update_time,'%Y-%m-%d') &lt;= #{endDate}
+		</if>   
+		 <if test="directionOf != null and directionOf != '' and directionOf != 'all' ">
+			AND direction_of=#{directionOf}
+		</if>
+	ORDER BY 
+						last_update_time DESC
+	</select>
+	 
+</mapper>

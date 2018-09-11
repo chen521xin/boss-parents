@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.InsurcompMapper">
+	<select id="queryAllInsurcomp" parameterType="java.lang.String" resultType="com.boss.core.db.Insurcomp">
+		SELECT 
+			ID,
+			FULL_NAME 
+		FROM 
+			J_INSURCOMP 
+		WHERE 
+			ROWSTATE = 1 
+		ORDER BY
+			start_time
+		ASC
+	</select>
+	<select id="queryInsurcompByFullName" parameterType="java.lang.String" resultType="com.boss.core.db.Insurcomp">
+		SELECT 
+			ID,
+			FULL_NAME 
+		FROM 
+			J_INSURCOMP 
+		WHERE 
+			ROWSTATE = 1 
+		AND
+			full_name = #{fullName}
+		ORDER BY
+			start_time
+		ASC
+	</select>
+	
+	<select id="queryInsurcompById" parameterType="com.boss.core.db.Insurcomp" resultType="com.boss.core.db.Insurcomp">
+		SELECT 
+			ID,
+			FULL_NAME 
+		FROM 
+			J_INSURCOMP 
+		WHERE 
+			ID = #{id}
+		AND 
+			ROWSTATE = 1
+	</select>
+	<sql id="queryFilter">
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="fullName != '' and fullName != null">
+				AND LOCATE(#{fullName},FULL_NAME)
+			</if>
+			<if test="simpleName != '' and simpleName != null">
+				AND LOCATE(#{simpleName},SIMPLE_NAME)
+			</if>
+			<if test="startTime != '' and startTime != null">
+				AND LOCATE(#{startTime},START_TIME)
+			</if>
+			<if test="endTime != '' and endTime != null">
+				AND LOCATE(#{endTime},END_TIME)
+			</if>
+			<if test="linkMan != '' and linkMan != null">
+				AND LOCATE(#{linkMan},LINKMAN)
+			</if>
+	</sql>
+	<select id="queryInsurcompByPage" parameterType="com.boss.core.db.Insurcomp"  resultType="com.boss.core.db.Insurcomp">
+		SELECT 
+			ID,
+			FULL_NAME,
+			SIMPLE_NAME,
+			DATE_FORMAT(START_TIME,'%Y-%m-%d') AS START_TIME,
+			DATE_FORMAT(END_TIME,'%Y-%m-%d') AS END_TIME,
+			LINKMAN,
+			LINK_PHONE,
+			INSURCOMP_ADDRESS,
+			INSURCOMP_PHONE,
+			INSURCOMP_EMAIL,
+			REMARK
+		FROM
+		    J_INSURCOMP 
+		WHERE 
+			ROWSTATE = 1
+		<include refid="queryFilter"/>
+		order by last_update_time desc
+	</select>
+	
+	<insert id="insertInsurcomp" parameterType="com.boss.core.db.Insurcomp">
+		INSERT INTO
+			 J_INSURCOMP
+			 (
+			 id,
+			 create_time,
+			 create_by,
+			 last_update_time,
+			 last_update_by,
+			 rowstate,
+			 version,
+			 full_name,
+			 simple_name,
+			 start_time,
+			 end_time,
+			 linkman,
+			 link_phone,
+			 insurcomp_address,
+			 insurcomp_phone,
+			 insurcomp_email,
+			 remark
+			 )
+		VALUE(
+		 	#{id},
+		 	#{createTime},
+		 	#{createBy},
+		 	#{lastUpdateTime},
+		 	#{lastUpdateBy},
+		 	#{rowstate},
+		 	#{version},
+		 	#{fullName},
+		 	#{simpleName},
+		 	DATE(#{startTime}),
+		 	DATE(#{endTime}),
+		 	#{linkMan},
+		 	#{linkPhone},
+		 	#{insurcompAddress},
+		 	#{insurcompPhone},
+		 	#{insurcompEmail},
+		 	#{remark}
+		 	)
+	</insert>
+	
+	<update id="updateInsurcomp" parameterType="com.boss.core.db.Insurcomp">
+		UPDATE
+		 	J_INSURCOMP 
+	    SET 
+	    	LAST_UPDATE_TIME = #{lastUpdateTime},
+			LAST_UPDATE_BY = #{lastUpdateBy},
+	    	FULL_NAME = #{fullName},
+	    	SIMPLE_NAME = #{simpleName},
+	    	START_TIME = #{startTime},
+			END_TIME = #{endTime},
+			LINKMAN = #{linkMan},
+			LINK_PHONE = #{linkPhone},
+			INSURCOMP_ADDRESS = #{insurcompAddress},
+			INSURCOMP_PHONE = #{insurcompPhone},
+			INSURCOMP_EMAIL = #{insurcompEmail},
+			REMARK = #{remark}
+		WHERE ID = #{id}
+	</update>
+	
+	<delete id="deleteInsurcomp" parameterType="java.lang.String">
+		UPDATE 
+			J_INSURCOMP
+		SET
+		 	ROWSTATE = 2
+		WHERE 
+		 	ID = #{id}
+	</delete>
+
+</mapper>

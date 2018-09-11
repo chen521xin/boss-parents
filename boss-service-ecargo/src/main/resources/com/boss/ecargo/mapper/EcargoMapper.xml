@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.ecargo.mapper.EcargoMapper">
+		<sql id="select_column_where">
+		        
+			<if test="holderNameQuery != null">
+				AND 
+				      		locate(#{holderNameQuery},e.holder_name)
+			</if>
+			<if test="recognizeeNameQuery != null">
+				AND				
+							locate(#{recognizeeNameQuery},e.recognizee_name)
+			</if>
+			<if test="invoiceNumberQuery != null">
+				AND
+							locate(#{invoiceNumberQuery},e.invoice_number)
+			</if>
+			<if test="itemdetailQuery != null">
+				AND
+							locate(#{itemdetailQuery},e.itemdetail)
+			</if>
+			<if test="isFaildQuery != null">
+				AND
+							e.is_faild = #{isFaildQuery}
+			</if>
+			<if test="ecargoPolicyNoQuery != null">
+				AND
+							locate(#{ecargoPolicyNoQuery},e.policy_no)
+			</if>
+		
+		</sql>
+    <sql id="selectColumList">
+      	e.id
+		,e.holder_name holderNameQuery
+		,e.holder_addr holderAddrQuery
+		,e.recognizee_name recognizeeNameQuery
+		,e.recognizee_addr recognizeeAddrQuery
+		,e.recognizee_identy recognizeeIdentyQuery
+		,e.recognizee_phone recognizeePhoneQuery
+		,e.recognizee_org recognizeeOrgQuery
+		,e.invoice_number invoiceNumberQuery
+		,e.itemdetail itemdetailQuery
+		,e.weight weightQuery
+		,e.super_type superTypeQuery
+		,e.`type` typeQuery
+		,e.quantity quantityQuery
+		,e.package packagesQuery
+		,e.license_no licenseNoQuery
+		,e.startsite_name startsiteNameQuery
+		,e.viasite_name viasiteNameQuery
+		,e.endsite_name endsiteNameQuery
+		,DATE_FORMAT(e.start_time,'%Y-%m-%d %k:%i:%s') startTimeQuery
+		,e.dispute_function disputeFunctionQuery
+		,e.sumamount sumamountQuery
+		,e.premium premiumQuery
+		,e.policy_no policyNoQuery
+		,e.is_faild isFaildQuery
+		,e.insurance_type insuranceTypeQuery
+		,e.faild_message faildMessageQuery
+		,e.apply_policy_no applyPolicyNo
+		,e.apply_status applyStatus
+		
+    </sql>
+
+	<!-- 增加账户 -->
+	<insert id="insertEcargo" parameterType="com.boss.core.db.EcargoInfo">
+		INSERT INTO j_ecargo (
+		id,create_time,create_by,last_update_time,last_update_by,`version`,rowstate
+		,holder_name,holder_addr,recognizee_name,recognizee_addr,recognizee_identy
+		,recognizee_phone,recognizee_org,invoice_number,itemdetail,weight
+		,super_type,`type`,quantity,package,license_no
+		,startsite_name,viasite_name,endsite_name,start_time,dispute_function
+		,sumamount,premium,insurance_type,user_id,apply_policy_no,apply_status
+		)
+		VALUES (
+		#{id},#{createTime} ,#{createBy} ,#{lastUpdateTime},#{lastUpdateBy},#{version},#{rowstate}
+		,#{holderName},#{holderAddr},#{recognizeeName},#{recognizeeAddr},#{recognizeeIdenty}
+		,#{recognizeePhone},#{recognizeeOrg},#{invoiceNumber},#{itemdetail},#{weight} 
+		,#{superType} ,#{type} ,#{quantity} ,#{packages},#{licenseNo} 
+		,#{startsiteName} ,#{viasiteName} ,#{endsiteName},#{startTime},#{disputeFunction} 
+		,#{sumamount} ,#{premium},#{insuranceType},#{userId},#{applyPolicyNo},#{applyStatus}
+		)
+	</insert>
+	<update id="updatePolicyNo" parameterType="com.boss.core.db.EcargoInfo">
+		UPDATE j_ecargo SET
+		<if test="lastUpdateTime != null">
+			last_update_time=#{lastUpdateTime}
+		</if>
+		<if test="lastUpdateBy != null">
+			,last_update_by=#{lastUpdateBy}
+		</if>
+		<if test="policyNo != null">
+			,policy_no=#{policyNo}
+		</if>
+		<if test="isFaild != null">
+			,is_faild = #{isFaild}
+		</if>
+		<if test="faildMessage != null">
+			,faild_message = #{faildMessage}
+		</if>
+		<if test="applyPolicyNo != null">
+			,apply_policy_no = #{applyPolicyNo}
+		</if>
+		<if test="applyStatus != null">
+			,apply_status = #{applyStatus}
+		</if>
+		where id=#{id}
+	</update>
+	<!--  -->
+	<select id="selectByPage" parameterType="com.boss.core.pojo.EcargoPojo"
+		resultType="com.boss.core.pojo.EcargoPojo">
+		SELECT
+	           				<include refid="selectColumList"/>
+	           			    ,u.full_name fullNameQuery
+		FROM
+							j_ecargo e
+		INNER JOIN 
+							J_USER u 
+		ON
+							u.id=e.user_id	
+								
+		AND
+			 				e.rowstate=1
+		   <if test="fullNameQuery != null">
+				AND
+							locate(#{fullNameQuery},u.full_name)     				
+		</if>		 				
+		     				<include refid="select_column_where"/>
+
+		ORDER BY
+							 e.last_update_time desc
+
+	</select>
+	<select id="selectByPageProx" parameterType="com.boss.core.pojo.EcargoPojo" resultType="com.boss.core.pojo.EcargoPojo">
+		SELECT
+	           				<include refid="selectColumList"/>
+	           				,u1.full_name fullNameQuery
+		FROM 
+							j_ecargo e
+		INNER JOIN 
+							j_user u1 
+		ON 
+							u1.id=e.user_id 
+		AND 
+							(u1.parent_id=#{userId} OR e.user_id=#{userId})
+		<if test="fullNameQuery != null">
+				AND
+							locate(#{fullNameQuery},u1.full_name)     				
+		</if>						
+		AND  
+							e.rowstate=1
+		     				<include refid="select_column_where"/>
+        ORDER BY 
+        					 e.last_update_time desc
+	</select>
+		<select id="selectByPageByUserId" parameterType="com.boss.core.pojo.EcargoPojo" resultType="com.boss.core.pojo.EcargoPojo">
+		SELECT
+	           			<include refid="selectColumList"/>
+	           			,u.full_name fullNameQuery
+		FROM 
+						j_ecargo e
+		INNER JOIN 
+						J_USER u 
+		ON
+						u.id=e.user_id
+		AND
+		    			e.user_id=#{userId}	   	
+		<if test="fullNameQuery != null">
+				AND
+							locate(#{fullNameQuery},u.full_name)     				
+		</if>	    					    						
+	    AND
+			 			e.rowstate=1
+		
+		    	 		<include refid="select_column_where"/>	
+		ORDER BY 
+		 				e.last_update_time desc     
+
+	</select>
+    <select id="selectEcargoByNo" parameterType="java.lang.String" resultType="com.boss.core.pojo.EcargoPojo">
+		SELECT
+	          			<include refid="selectColumList"/>
+	          			,u.full_name fullNameQuery
+		FROM 	
+						j_ecargo e
+		INNER JOIN 
+						J_USER u 
+		ON
+						u.id=e.user_id				
+		and
+		     			 e.rowstate=1
+		AND
+						(
+							e.policy_no = #{policyNoQuery} 
+							or 
+							e.apply_policy_no= #{policyNoQuery} 
+						)
+						
+	</select>
+	
+	<select id="selectEcargoApplyNo" parameterType="java.lang.String" resultType="com.boss.core.pojo.EcargoPojo">
+		SELECT
+	          			<include refid="selectColumList"/>
+	          			,u.full_name fullNameQuery
+		FROM 	
+						j_ecargo e
+		INNER JOIN 
+						J_USER u 
+		ON
+						u.id=e.user_id				
+		and
+		     			 e.rowstate=1
+		AND
+						e.apply_policy_no = #{applyNoQuery}
+	</select>
+	
+	
+		<select id="findUserRate" parameterType="com.boss.core.db.UserRateInfo" resultType="java.lang.String" >
+		SELECT user_rate FROM j_user_rate WHERE user_id=#{userId} AND insurance_type=#{insuranceType}
+	</select>
+	
+	<select id="findParentIdAndUserRate" parameterType="com.boss.core.db.EcargoInfo" resultType="com.boss.core.db.User">
+	      SELECT u1.id,rate.user_rate as currentUserRate FROM j_user u1 
+ INNER JOIN j_user u2 ON u1.id=u2.parent_id AND u2.id=#{userId} 
+ LEFT JOIN j_user_rate rate ON rate.user_id=u1.id AND rate.insurance_type=#{insuranceType}
+        </select>
+</mapper>

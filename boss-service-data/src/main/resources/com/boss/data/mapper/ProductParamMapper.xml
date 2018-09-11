@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.ProductParamMapper">
+	<select id="findByProductId" parameterType="java.lang.String" resultType="com.boss.core.db.ProductParam">
+	SELECT
+		id,
+		param_name,
+		param_value1,
+		param_value2,
+		type_info
+	FROM 
+		j_product_param
+	WHERE
+		rowstate = 1
+	AND
+		product_id = #{productId}
+	</select>
+	<select id="findByPage" resultType="com.boss.core.db.ProductParam">
+	SELECT 
+		 param.id
+		,product.product_name
+		,product.id productId
+		,param.param_name
+		,param.param_value1
+		,param.param_value2
+		,param.type_info
+	FROM 
+		j_product_param param 
+	INNER JOIN  
+		j_policy_product product 
+	ON 
+		param.product_id = product.id 
+	WHERE 
+		param.rowstate = 1
+	<if test="id != null and id != ''">
+	AND param.id = #{id}
+	</if>
+	<if test="productName != null and productName != ''">
+	AND LOCATE(#{productName},product.product_name) 
+	</if>
+	<if test="paramName != null and paramName != ''">
+	AND LOCATE(#{paramName},param.param_name)
+	</if>
+	ORDER BY
+		param.last_update_time
+	DESC
+	</select>
+	<insert id="insertProductParam" parameterType="com.boss.core.db.ProductParam">
+	INSERT INTO 
+		j_product_param
+		(
+		id,
+		create_time,
+		create_by,
+		last_update_time,
+		last_update_by,
+		rowstate,
+		version,
+		product_id,
+		param_name,
+		param_value1,
+		param_value2,
+		type_info
+		) 
+	VALUE
+		(
+		#{id},
+		#{createTime},
+		#{createBy},
+		#{lastUpdateTime},
+		#{lastUpdateBy},
+		#{rowstate},
+		#{version},
+		#{productId},
+		#{paramName},
+		#{paramValue1},
+		#{paramValue2},
+		#{typeInfo}
+		)
+	</insert>
+	<update id="updateProductParam" parameterType="com.boss.core.db.ProductParam">
+	UPDATE 
+		j_product_param 
+	SET 
+		last_update_time = #{lastUpdateTime},
+		last_update_by = #{lastUpdateBy},
+		product_id = #{productId},
+		param_name = #{paramName},
+		param_value1 = #{paramValue1},
+		param_value2 = #{paramValue2},
+		type_info = #{typeInfo}
+	WHERE 
+		id = #{id};
+	</update>
+	<delete id="deleteProductParam" parameterType="java.lang.String">
+	UPDATE 
+		j_product_param
+	SET
+	 	ROWSTATE = 2
+	WHERE 
+		ID = #{id}
+	</delete>
+</mapper>

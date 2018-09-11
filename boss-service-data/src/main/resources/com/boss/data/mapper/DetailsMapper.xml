@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.DetailsMapper">
+	<!-- <select id="findByProductId" parameterType="java.lang.String" resultType="com.boss.core.db.Details">
+	
+	</select> -->
+	<select id="findByPage" parameterType="com.boss.core.db.DetailsQueryInfo" resultType="com.boss.core.db.DetailsQueryInfo">
+	SELECT 
+		details.id ,
+		details.policy_id policyIdQuery, 
+		details.policy_no policyNoQuery,
+		details.cust_name custNameQuery,
+		details.trans_deal_no transDealNoQuery,
+		details.caroddnum caroddnumQuery,
+		details.consignee consigneeQuery,
+		details.consignee_mobile consigneeMobileQuery,
+		details.goods_name goodsNameQuery,
+		details.goods_total_num goodsTotalNumQuery,
+		details.goods_weight_num goodsWeightNumQuery,
+		details.pamid pamidQuery,
+		details.select_dcbe selectDcbeQuery,
+		details.xishu xishuQuery,
+		details.select_money selectMoneyQuery,
+		DATE_FORMAT(details.start_date,'%Y-%m-%d %H:%i:%S') startDateQuery,		
+		details.fazhan fazhanQuery,
+		details.goods_to goodsToQuery,
+		details.driver driverQuery,
+		details.driver_mobile driverMobileQuery,
+		details.driver_license driverLicenseQuery,
+		details.goods_to_mobile goodsToMobileQuery,
+		details.goods_owner goodsOwnerQuery,
+		details.vehicle_no vehicleNoQuery,
+		details.vehicle_type vehicleTypeQuery,
+		DATE_FORMAT(details.tdate,'%Y-%m-%d %H:%i:%S') tDateQuery,
+		details.rowstate rowstateQuery,
+		details.state stateQuery,
+		details.`space` specQuery,
+		us.username userNameQuery,
+		insurcomp.full_name fullNameQuery
+	FROM 
+		j_details details
+	INNER JOIN 
+		j_policy policy
+	ON
+		policy.id = details.policy_id
+	INNER JOIN 
+		j_user us
+	ON 	
+		us.id = policy.user_id
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		insurcomp.id = policy.insurcomp_id
+	<include refid="condition"/>
+    ORDER BY 
+		details.last_update_time 
+	DESC
+	</select>
+	<!--根据角色查询之保险员查询  -->
+	<select id="findByInsurcompId" parameterType="com.boss.core.db.DetailsQueryInfo" resultType="com.boss.core.db.DetailsQueryInfo">
+	SELECT 
+		details.id ,
+		details.policy_id policyIdQuery, 
+		details.policy_no policyNoQuery,
+		details.cust_name custNameQuery,
+		details.trans_deal_no transDealNoQuery,
+		details.caroddnum caroddnumQuery,
+		details.consignee consigneeQuery,
+		details.consignee_mobile consigneeMobileQuery,
+		details.goods_name goodsNameQuery,
+		details.goods_total_num goodsTotalNumQuery,
+		details.goods_weight_num goodsWeightNumQuery,
+		details.pamid pamidQuery,
+		details.select_dcbe selectDcbeQuery,
+		details.xishu xishuQuery,
+		details.select_money selectMoneyQuery,
+		DATE_FORMAT(details.start_date,'%Y-%m-%d %H:%i:%S') startDateQuery,		
+		details.fazhan fazhanQuery,
+		details.goods_to goodsToQuery,
+		details.driver driverQuery,
+		details.driver_mobile driverMobileQuery,
+		details.driver_license driverLicenseQuery,
+		details.goods_to_mobile goodsToMobileQuery,
+		details.goods_owner goodsOwnerQuery,
+		details.vehicle_no vehicleNoQuery,
+		details.vehicle_type vehicleTypeQuery,
+		DATE_FORMAT(details.tdate,'%Y-%m-%d %H:%i:%S') tDateQuery,
+		details.rowstate rowstateQuery,
+		details.state stateQuery,
+		details.`space` specQuery,
+		us.username userNameQuery,
+		insurcomp.full_name fullNameQuery
+	FROM 
+		j_details details
+	INNER JOIN 
+		j_policy policy
+	ON
+		policy.id = details.policy_id
+	INNER JOIN 
+		j_user us
+	ON 	
+		us.id = policy.user_id
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		insurcomp.id = policy.insurcomp_id
+	AND 
+		insurcomp.id = #{insurcompId}
+	<include refid="condition"/>
+    ORDER BY 
+		details.last_update_time 
+	DESC
+	</select>
+	<!--根据角色查询之代理查询  -->
+	<select id="findByPoxy" parameterType="com.boss.core.db.DetailsQueryInfo" resultType="com.boss.core.db.DetailsQueryInfo">
+	SELECT 
+		details.id ,
+		details.policy_id policyIdQuery, 
+		details.policy_no policyNoQuery,
+		details.cust_name custNameQuery,
+		details.trans_deal_no transDealNoQuery,
+		details.caroddnum caroddnumQuery,
+		details.consignee consigneeQuery,
+		details.consignee_mobile consigneeMobileQuery,
+		details.goods_name goodsNameQuery,
+		details.goods_total_num goodsTotalNumQuery,
+		details.goods_weight_num goodsWeightNumQuery,
+		details.pamid pamidQuery,
+		details.select_dcbe selectDcbeQuery,
+		details.xishu xishuQuery,
+		details.select_money selectMoneyQuery,
+		DATE_FORMAT(details.start_date,'%Y-%m-%d %H:%i:%S') startDateQuery,		
+		details.fazhan fazhanQuery,
+		details.goods_to goodsToQuery,
+		details.driver driverQuery,
+		details.driver_mobile driverMobileQuery,
+		details.driver_license driverLicenseQuery,
+		details.goods_to_mobile goodsToMobileQuery,
+		details.goods_owner goodsOwnerQuery,
+		details.vehicle_no vehicleNoQuery,
+		details.vehicle_type vehicleTypeQuery,
+		DATE_FORMAT(details.tdate,'%Y-%m-%d %H:%i:%S') tDateQuery,
+		details.rowstate rowstateQuery,
+		details.state stateQuery,
+		details.`space` specQuery,
+		us.username userNameQuery,
+		insurcomp.full_name fullNameQuery
+	FROM 
+		j_details details
+	INNER JOIN 
+		j_policy policy
+	ON
+		policy.id = details.policy_id
+	INNER JOIN 
+		j_user us
+	ON 	
+		us.id = policy.user_id
+	AND     
+		(us.parent_id = #{userId} or policy.user_id = #{userId})
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		insurcomp.id = policy.insurcomp_id
+		<include refid="condition"/>
+    ORDER BY 
+		details.last_update_time 
+	DESC	
+	</select>
+	<!--根据角色查询之用户查询  -->
+	<select id="findByUsers" parameterType="com.boss.core.db.DetailsQueryInfo" resultType="com.boss.core.db.DetailsQueryInfo">
+		SELECT 
+		details.id ,
+		details.policy_id policyIdQuery, 
+		details.policy_no policyNoQuery,
+		details.cust_name custNameQuery,
+		details.trans_deal_no transDealNoQuery,
+		details.caroddnum caroddnumQuery,
+		details.consignee consigneeQuery,
+		details.consignee_mobile consigneeMobileQuery,
+		details.goods_name goodsNameQuery,
+		details.goods_total_num goodsTotalNumQuery,
+		details.goods_weight_num goodsWeightNumQuery,
+		details.pamid pamidQuery,
+		details.select_dcbe selectDcbeQuery,
+		details.xishu xishuQuery,
+		details.select_money selectMoneyQuery,
+		DATE_FORMAT(details.start_date,'%Y-%m-%d %H:%i:%S') startDateQuery,		
+		details.fazhan fazhanQuery,
+		details.goods_to goodsToQuery,
+		details.driver driverQuery,
+		details.driver_mobile driverMobileQuery,
+		details.driver_license driverLicenseQuery,
+		details.goods_to_mobile goodsToMobileQuery,
+		details.goods_owner goodsOwnerQuery,
+		details.vehicle_no vehicleNoQuery,
+		details.vehicle_type vehicleTypeQuery,
+		DATE_FORMAT(details.tdate,'%Y-%m-%d %H:%i:%S') tDateQuery,
+		details.rowstate rowstateQuery,
+		details.state stateQuery,
+		details.`space` specQuery,
+		us.username userNameQuery,
+		insurcomp.full_name fullNameQuery
+	FROM 
+		j_details details
+	INNER JOIN 
+		j_policy policy
+	ON
+		policy.id = details.policy_id
+	INNER JOIN 
+		j_user us
+	ON 	
+		us.id = policy.user_id
+	AND     
+		us.id = #{userId}
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		insurcomp.id = policy.insurcomp_id
+		<include refid="condition"/>
+	ORDER BY
+		details.last_update_time
+	DESC
+	</select>
+	<sql id="condition">
+			<if test="userNameQuery != null and userNameQuery != ''">
+			AND LOCATE(#{userNameQuery},us.username) 
+			</if>
+			<if test="custNameQuery != null and custNameQuery != ''">
+			AND LOCATE(#{custNameQuery},details.cust_name)
+			</if>
+			<if test="policyNoQuery != null and policyNoQuery != ''">
+			AND LOCATE(#{policyNoQuery},details.policy_no)
+			</if>
+			<if test="transDealNoQuery != null and transDealNoQuery != ''">
+			AND LOCATE(#{transDealNoQuery},details.trans_deal_no)
+			</if>
+			<if test="caroddnumQuery != null and caroddnumQuery != ''">
+			AND LOCATE(#{caroddnumQuery},details.caroddnum)
+			</if>
+			<if test="consigneeQuery != null and consigneeQuery != ''">
+			AND LOCATE(#{consigneeQuery},details.consignee)
+			</if>
+			<if test="consigneeMobileQuery != null and consigneeMobileQuery != ''">
+			AND LOCATE(#{consigneeMobileQuery},details.consignee_mobile)
+			</if>
+			<if test="fazhanQuery != null and fazhanQuery != ''">
+			AND LOCATE(#{fazhanQuery},details.fazhan)
+			</if>
+			<if test="goodsNameQuery != null and goodsNameQuery != ''">
+			AND LOCATE(#{goodsNameQuery},details.goods_name)
+			</if>
+			<if test="goodsToQuery != null and goodsToQuery != ''">
+			AND LOCATE(#{goodsToQuery},details.goods_to)
+			</if>
+			<if test="driverQuery != null and driverQuery != ''">
+			AND LOCATE(#{driverQuery},details.driver)
+			</if>
+			<!--还差填单起始时间，填单终止时间  -->
+			<if test=" startDateQuery != null and startDateQuery != ''">
+			AND details.start_date &gt;= #{startDateQuery}
+			</if>
+			<if test="endDateQuery != null and endDateQuery !='' ">
+			AND details.start_date &lt;= #{endDateQuery}
+			</if>
+			<if test="fullNameQuery != null and fullNameQuery != ''">
+			AND LOCATE(#{fullNameQuery},insurcomp.full_name)
+			</if>
+	</sql>
+	<insert id="insertDetails" parameterType="com.boss.core.db.Details">
+	INSERT INTO 
+		j_details
+		(
+		id,
+		create_time,
+		create_by,
+		last_update_time,
+		last_update_by,
+		rowstate,
+		version,
+		policy_id,
+		policy_no,
+		cust_name,
+		trans_deal_no,
+		caroddnum,
+		consignee,
+		consignee_mobile,
+		goods_name,
+		goods_total_num,
+		goods_weight_num,
+		pamid,
+		select_dcbe,
+		xishu,
+		select_money,
+		start_date,
+		fazhan,
+		goods_to,
+		driver,
+		driver_mobile,
+		driver_license,
+		goods_to_mobile,
+		goods_owner,
+		vehicle_no,
+		vehicle_type,
+		tdate,
+		state,
+		`space`,
+		rb_xishu, 
+		insure_result 
+		) 
+	VALUE
+		(
+		#{id},
+		#{createTime},
+		#{createBy},
+		#{lastUpdateTime},
+		#{lastUpdateBy},
+		#{rowstate},
+		#{version},
+		#{policyId},
+		#{policyNo},
+		#{custName},
+		#{transDealNo},
+		#{caroddnum},
+		#{consignee},
+		#{consigneeMobile},
+		#{goodsName},
+		#{goodsTotalNum},
+		#{goodsWeightNum},
+		#{pamid},
+		#{selectDcbe},
+		#{xishu},
+		#{selectMoney},
+		#{startDate},
+		#{fazhan},
+		#{goodsTo},
+		#{driver},
+		#{driverMobile},
+		#{driverLicense},
+		#{goodsToMobile },
+		#{goodsOwner},
+		#{vehicleNo},
+		#{vehicleType},
+		#{tdate},
+		#{state},
+		#{space},
+		#{rbXishu},
+		#{insureResult}
+		)
+	</insert>
+	<update id="updateDetails" parameterType="com.boss.core.db.DetailsUpdateInfo">
+	UPDATE 
+		j_details 
+	SET 
+		last_update_time = #{lastUpdateTime},
+		last_update_by = #{lastUpdateBy},
+		policy_id = #{policyIdUpd},
+		policy_no = #{policyNoUpd},
+		cust_name = #{custNameUpd},
+		trans_deal_no = #{transDealNoUpd},
+		caroddnum = #{caroddnumUpd},
+		consignee = #{consigneeUpd},
+		consignee_mobile = #{consigneeMobileUpd},
+		goods_name = #{goodsNameUpd},
+		goods_total_num = #{goodsTotalNumUpd},
+		goods_weight_num = #{goodsWeightNumUpd},
+		pamid = #{pamidUpd},
+		select_dcbe = #{selectDcbeUpd},
+		xishu = #{xishuUpd},
+		select_money = #{selectMoneyUpd},
+		start_date = #{startDateUpd},
+		fazhan = #{fazhanUpd},
+		goods_to = #{goodsToUpd},
+		driver = #{driverUpd},
+		driver_mobile = #{driverMobileUpd},
+		driver_license = #{driverLicenseUpd},
+		goods_to_mobile = #{goodsToMobileUpd},
+		goods_owner = #{goodsOwnerUpd},
+		vehicle_no = #{vehicleNoUpd},
+		vehicle_type = #{vehicleTypeUpd},
+		tdate = #{tdateUpd},
+		state = #{stateUpd},
+		`space` = #{spaceUpd}
+	WHERE 
+		id = #{id};
+	</update>
+	<delete id="deleteDetails" parameterType="java.lang.String">
+	UPDATE 
+		j_details
+	SET
+	 	ROWSTATE = 2
+	WHERE 
+		ID = #{id}
+	</delete>
+	<select id="findById" parameterType="java.lang.String" resultType="com.boss.core.db.Details">
+	SELECT 
+		policy_no,
+		cust_name,
+		trans_deal_no,
+		caroddnum,
+		consignee,
+		consignee_mobile,
+		goods_name,
+		goods_total_num,
+		goods_weight_num,
+		select_money,
+		DATE_FORMAT(start_date,'%Y-%m-%d %H:%i:%S') start_date,
+		fazhan,
+		goods_to,
+		driver,
+		driver_mobile,
+		driver_license,
+		goods_to_mobile,
+		goods_owner,
+		vehicle_no,
+		vehicle_type,
+		DATE_FORMAT(tdate,'%Y-%m-%d %H:%i:%S') tdate ,
+		`space`
+	FROM 
+		j_details
+	WHERE 
+		id = #{id}
+	</select>
+	<select id="findDetailsByPolicy" parameterType="java.lang.String" resultType="java.lang.Integer">
+	SELECT COUNT(1) FROM J_DETAILS WHERE POLICY_ID = #{policyId}
+	</select>
+</mapper>

@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
-Implementation-Vendor: Pivotal Software, Inc.
 Implementation-Title: boss-spring
-Implementation-Version: 1.0-SNAPSHOT
-Implementation-Vendor-Id: com.sse.boss
-Build-Jdk: 1.7.0_17
+Implementation-Version: 0.2.0-SNAPSHOT
 Built-By: Administrator
+Implementation-Vendor-Id: com.sse.boss
+Build-Jdk: 1.8.0_101
+Implementation-URL: https://projects.spring.io/spring-cloud/boss-paren
+ ts/boss-spring
 Created-By: Maven Integration for Eclipse
-Implementation-URL: http://projects.spring.io/spring-boot/boss-parents
- /boss-spring/
+Implementation-Vendor: Pivotal Software, Inc.
 

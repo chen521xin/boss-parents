@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.ecargo.mapper.JlogMapper">
+	<insert id="addJlog" parameterType="com.boss.core.db.Jlog">
+		INSERT INTO
+			j_log 
+			(
+			id,
+			create_time,
+			create_by,
+			last_update_time,
+			last_update_by,
+			rowstate,
+			version,
+			username,
+			user_ip,
+			biz_type,
+			status,
+			message,
+			service_name,
+			instance_id,
+			service_host,
+			time_zone,
+			user_id,
+			full_name
+			)
+		VALUE(
+			#{id},
+			#{createTime},
+			#{createBy},
+			#{lastUpdateTime},
+			#{lastUpdateBy},
+			#{rowstate},
+			#{version},
+			#{userName},
+			#{userIp},
+			#{bizType},
+			#{status},
+			#{message},
+			#{serviceName},
+			#{instanceId},
+			#{serviceHost},
+			#{timeZone},
+			#{userId},
+			#{fullName}
+			);
+	</insert>
+</mapper>

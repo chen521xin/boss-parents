@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.ProductInfoListMapper">
+	
+	<select id="selectProductListPyPage" parameterType="com.boss.core.db.ProductInfo" resultType="com.boss.core.db.ProductInfo">
+		SELECT 
+	    		l.id
+	    		,l.create_by
+	    		,l.create_time
+	    		,l.last_update_by
+	    		,l.last_update_time
+	    		,l.product_name
+	    		,l.product_type_id
+	    		,l.product_Info
+	    		,l.imgTitle
+	    		,f.id fileId
+	    		,f.file_path
+	    		,f.file_name
+	    		,CONCAT(file_path,file_name) as fileDecisionPath 
+	    		,i.full_name as companyName
+	    		,i.id  as companyId
+        FROM 
+						j_product_info_list  l
+        LEFT JOIN 
+						j_file f
+        ON              
+                        f.biz_id=l.id
+        INNER JOIN      
+						j_insurcomp i
+	    ON              
+	           			i.id=l.company_id	                 
+        WHERE 
+                        l.rowstate = 1
+       <if test="productTypeId != null">
+        AND               
+                        product_type_id = #{productTypeId}
+       </if>   
+        <if test="productName != null">
+        AND             
+                       LOCATE(#{productName},product_name)  
+       </if>  
+         <if test="id != null">
+        AND             
+                       id = #{id}
+       </if>               
+	</select>
+
+		<insert id="insertImage" parameterType="com.boss.core.db.ProductInfo">
+		INSERT INTO j_product_info_list 
+					(id,create_by,create_time,last_update_by,last_update_time,rowstate,VERSION,product_name,product_type_id,product_Info,company_id,imgTitle)
+		VALUES 
+					(
+					#{id},#{createBy},#{createTime},#{lastUpdateBy},#{lastUpdateTime},#{rowstate},#{version},#{productName},#{productTypeId},
+					#{productInfo},#{companyId},#{imgTitle}
+					)
+	   </insert>
+	   
+	   <update id="updateImage" parameterType="com.boss.core.db.ProductInfo">
+	   
+		UPDATE j_product_info_list 
+		SET  
+		
+				last_update_by = #{lastUpdateBy}
+				,last_update_time = #{lastUpdateTime}
+				 <if test="rowstate != null">
+				 ,rowstate = #{rowstate}
+				 </if>
+				  <if test="productName != null">
+				  ,product_name = #{productName}
+				 </if>
+				  <if test="productTypeId != null">
+				  ,product_type_id = #{productTypeId}
+				 </if>
+				  <if test="productInfo != null">
+				  ,product_Info = #{productInfo}
+				 </if>
+				  <if test="companyId != null">
+				  ,company_id = #{companyId}
+				 </if>
+				  <if test="imgTitle != null">
+				  ,imgTitle = #{imgTitle}
+				 </if>
+		WHERE 
+				id=#{id}
+	   </update>
+	   
+	   <delete id="deleteProduct" parameterType="java.lang.String">
+	   delete from j_product_info_list  where id=#{id}
+	   </delete>
+</mapper>

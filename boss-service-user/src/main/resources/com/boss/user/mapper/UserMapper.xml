@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.user.mapper.UserMapper">
+   <sql id="select_column_where_list">
+                            AND     user.rowstate=#{rowstate}
+        <!-- 用户登录名账号 -->
+        <if test="username != null and username != '' ">
+							AND     LOCATE(#{username},user.username)
+		</if>
+		  <!-- 用户姓名-->
+        <if test="fullName != null and fullName != '' ">
+							AND    LOCATE(#{fullName},user.full_name)
+		</if>		
+		<!-- 用户状态 -->
+		<if test="status != null and status != '' ">
+							AND    user.status=#{status}
+		</if>
+		<!-- 上级代理民称 -->
+		<if test="parentId != null and parentId != '' ">
+							AND    user.parent_id=#{status}
+		</if>
+
+		<!-- 保险公司 -->
+		<if test="insurcompId != null and insurcompId != '' ">
+							AND    user.insurcomp_id=#{status}
+		</if>
+		<!-- 是否发送邮件 -->
+		<if test="isSendMail != null and isSendMail != '' ">
+							AND    user.is_send_mail=#{status}
+		</if>
+		<!-- 代理登记 -->
+		<if test="agentLevel != null and agentLevel != '' ">
+							AND    user.agent_level=#{agentLevel}
+		</if>
+		<!-- 保险人 -->
+		<if test="insurant != null and insurant != ''">
+		                    AND    LOCATE(#{insurant},user.insurant)
+		</if>
+		<!-- 用户电话 -->
+		<if test="userMoidle != null and userMoidle != ''">
+		                    AND    LOCATE(#{userMoidle},user.user_moidle)
+		</if>
+   </sql>
+   <sql id="select_column_list">
+  							 user.id     						
+    						 ,user.username
+     						 ,user.full_name 					
+    						 ,user.user_moidle
+    						 ,user.user_address
+    						 ,user.idcard_no
+   	 						 ,user.agent_level
+   	 						 ,user.password 
+    						 ,user.user_mail
+    						 ,user.parent_id
+    						 ,user.insurcomp_id
+    						 ,user.insurant
+    						 ,user.is_send_mail						 
+    						 ,user.count_pwd_errors
+    						 ,user.user_lock_time
+    						 ,user.is_first_login
+   </sql>
+   <resultMap id="baseResultMap" type="com.boss.core.db.User">
+        <result column="id" jdbcType="VARCHAR" property="id"/> 
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="last_update_time" jdbcType="VARCHAR" property="lastUpdateTime"/> 
+        <result column="last_update_by" jdbcType="VARCHAR" property="lastUpdateBy"/> 
+        <result column="username" jdbcType="VARCHAR" property="username"/> 
+        <result column="full_name" jdbcType="VARCHAR" property="fullName"/> 
+        <result column="password" jdbcType="VARCHAR" property="password"/> 
+        <result column="user_mail" jdbcType="VARCHAR" property="userMail"/> 
+        <result column="user_moidle" jdbcType="VARCHAR" property="userMoidle"/> 
+        <result column="user_address" jdbcType="VARCHAR" property="userAddress"/> 
+        <result column="idcard_no" jdbcType="VARCHAR" property="idcardNo"/> 
+        <result column="agent_level" jdbcType="VARCHAR" property="agentLevel"/> 
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/> 
+        <result column="insurcomp_id" jdbcType="VARCHAR" property="insurcompId"/> 
+        <result column="insurant" jdbcType="VARCHAR" property="insurant"/> 
+        <result column="is_send_mail" jdbcType="VARCHAR" property="isSendMail"/> 
+        <result column="count_pwd_errors" jdbcType="VARCHAR" property="countPwdErrors"/> 
+        <result column="user_lock_time" jdbcType="VARCHAR" property="userLockTime"/> 
+        <result column="is_first_login" jdbcType="VARCHAR" property="isFirstLogin"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="is_allow_ecargo" jdbcType="VARCHAR" property="isAllowEcargo"/>
+        
+   </resultMap>
+   <resultMap id="userMap" type="com.boss.core.db.User" extends="baseResultMap">
+            <collection property="userRate" column="id"  select="selectUserRole" javaType="ArrayList"/>
+   </resultMap>
+   
+   <resultMap id="selectUserRate" type="com.boss.core.db.UserRateInfo" >
+          <result column="user_rate" jdbcType="VARCHAR" property="userRate"/>
+            <result column="insurance_type" jdbcType="VARCHAR" property="insuranceType"/>
+   </resultMap>
+   <select id="selectUserRole" parameterType="java.lang.String" resultMap="selectUserRate">
+            SELECT user_rate,insurance_type FROM j_user_rate WHERE user_id=#{id}
+   </select>
+	<select id="findUserByUserNameAndStatus" parameterType="com.boss.core.db.User" resultType="com.boss.core.db.User">
+		SELECT               
+							<include refid="select_column_list" />
+							,status
+    	FROM 
+    						j_user  `user`
+       where
+              				user.rowstate=1
+	   AND    
+	  						user.username=#{username}
+	</select>
+	<select id="findUserByPage" parameterType="com.boss.core.db.User" resultMap="userMap">
+		SELECT               
+							<include refid="select_column_list" />
+							,role.role_name
+							,role.id roleId
+							,CASE user.STATUS WHEN '2' THEN '2' WHEN '0' THEN '0' ELSE '1' END AS STATUS
+							,comp.id  insurcompId
+							,comp.full_name insurcompName
+							,user2.full_name parentName
+							,user.is_allow_ecargo
+    	FROM 
+    						j_user `user` 
+    	INNER JOIN          j_user_role uRole on uRole.user_id=user.id
+    	INNER JOIN          j_role role on role.id = uRole.role_id 		
+    	<if test="roleId != null and roleId != '' ">
+							AND    role.id=#{roleId}
+		 </if>
+    	LEFT JOIN 			j_user user2 ON user2.id=user.parent_id
+    	LEFT JOIN           j_insurcomp comp on comp.id=user.insurcomp_id      			  	           		
+        <where>
+                   <include refid="select_column_where_list" />
+        </where> 
+         ORDER BY user.last_update_time desc
+        					
+	</select>
+		<select id="findUserByPageAndProxy" parameterType="com.boss.core.db.User" resultMap="userMap">
+		SELECT               
+							<include refid="select_column_list" />
+							,role.role_name
+							,role.id  roleId
+							,CASE user.STATUS WHEN '2' THEN '2' WHEN '0' THEN '0' ELSE '1' END AS STATUS
+							,comp.id  insurcompId
+							,comp.full_name insurcompName
+							,user2.full_name parentName
+							,user.is_allow_ecargo
+    	FROM 
+    						j_user `user` 
+    		
+    	INNER JOIN          j_user_role uRole on uRole.user_id=user.id
+    	INNER JOIN          j_role role on role.id = uRole.role_id 		
+    	INNER JOIN          j_user user2 on user2.id=user.parent_id and user.parent_id = #{id}
+    	<if test="roleId != null and roleId != '' ">
+							AND    role.id=#{roleId}
+		 </if>
+    	
+    	LEFT JOIN           j_insurcomp comp on comp.id=user.insurcomp_id      		
+        <where>
+                   	
+                   <include refid="select_column_where_list" />
+        </where> 
+        ORDER BY user.last_update_time DESC			
+	</select>
+	<!-- 查询所有用户、保单管理专用 -->
+		<select id="findUser" parameterType="com.boss.core.db.User" resultType="com.boss.core.db.User">
+		SELECT               
+							user.id
+							,user.username
+							,user.full_name
+							,user.parent_id
+							,role.role_name
+							,role.role_code
+							,user.agent_level
+							,user.insurant
+    	FROM 
+    						j_user `user`
+    	INNER JOIN          j_user_role uRole on uRole.user_id=user.id 	
+   
+    	INNER JOIN          j_role role on role.id = uRole.role_id			
+    	<if test="agentLevel == 0">
+    	                    AND  role.role_code='ROLE_PROXY'
+    	</if>		 	  	           		
+        WHERE
+                            user.rowstate = 1	
+        <if test="agentLevel == 1 or agentLevel == 2 ">
+          AND user.agent_level = #{agentLevel} AND user.id != #{id}
+        </if>                    
+ 
+	</select>
+	<!-- 查询所有用户、保单管理专用 -->
+		<select id="findParentUser" parameterType="java.lang.String" resultType="com.boss.core.db.User">
+		SELECT               
+							user.id
+							,user.username
+							,user.full_name
+							,user.parent_id
+							,role.role_code
+							,user.agent_level
+							,user.id
+    	FROM 
+    						j_user `user`
+    	INNER JOIN          j_user_role uRole on uRole.user_id=user.id 	
+    	INNER JOIN          j_role role on role.id = uRole.role_id					 	  	           		
+        WHERE
+                            user.rowstate = 1	
+       AND                     
+                            user.id=#{parentId}
+	</select>
+	
+	
+		<select id="validateUserNameAndPassword" parameterType="com.boss.core.db.User" resultType="java.lang.Integer">
+		SELECT count(1) FROM j_user WHERE username = #{username} and password = #{password} and rowstate=1 
+	</select>
+	
+	<insert id="insertUser" parameterType="com.boss.core.db.User">
+	INSERT INTO 
+	 			j_user
+	 					(
+	    					 id ,
+	    					 create_time,
+    						 create_by,
+    						 last_update_time,
+    						 last_update_by,
+    						 version,
+    						 rowstate,
+    						 username ,
+     						 full_name ,
+    						 password ,
+    						 user_mail ,
+    						 user_moidle ,
+    						 user_address,
+    						 idcard_no,
+   	 						 agent_level,
+    						 parent_id,
+    						 insurcomp_id,
+    						 insurant,
+    						 is_send_mail,  
+    						 status,
+    						 is_first_login,
+    						 is_allow_ecargo
+    					)
+    	VALUES			(
+    						 #{id},
+	    					 #{createTime},
+    						 #{createBy},
+    						 #{lastUpdateTime},
+    						 #{lastUpdateBy},
+    						 #{version},
+    						 #{rowstate},
+    						 #{username},
+     						 #{fullName} ,
+    						 #{password} ,
+    						 #{userMail} ,
+    						 #{userMoidle} ,
+    						 #{userAddress},
+    						 #{idcardNo},
+   	 						 #{agentLevel},
+    						 #{parentId},
+    						 #{insurcompId},
+    						 #{insurant},
+    						 #{isSendMail},  
+    						 #{status},
+    						 #{isFirstLogin},
+    						 #{isAllowEcargo}
+    					)
+	</insert>
+
+	<update id="updateUser" parameterType="com.boss.core.db.User">
+	update j_user	
+
+	 <trim prefix="set" suffixOverrides=",">
+	 <if test="lastUpdateBy != null ">
+		   last_update_by = #{lastUpdateBy},
+		</if>
+		<if test="lastUpdateTime != null ">
+		last_update_time=#{lastUpdateTime},
+		</if>
+		<if test="username != null ">
+		   username = #{username},
+		</if>
+		<if test="password != null ">
+		password=#{password},
+		</if>
+		<if test="insurcompId != null ">
+		insurcomp_id=#{insurcompId},
+		</if>
+		<if test="agentLevel != null">
+		agent_level=#{agentLevel},
+		</if>
+		<if test="parentId != null">
+		parent_id=#{parentId},
+		</if>
+		<if test="insurant != null">
+		insurant=#{insurant},
+		</if>
+		<if test="fullName != null">
+		full_name=#{fullName},
+		</if>
+		<if test="rowstate != null">
+		rowstate=#{rowstate},
+		</if>
+		<if test="isSendMail">
+		is_send_mail=#{isSendMail},
+		</if>
+		<if test="idcardNo != null">
+		idcard_no=#{idcardNo},
+		</if>
+		<if test="userMail != null">
+		user_mail=#{userMail},
+		</if>
+		<if test="userMoidle != null">
+		user_moidle=#{userMoidle},
+		</if>
+		<if test="userAddress != null">
+		user_address=#{userAddress},
+		</if>	
+		<if test="countPwdErrors != null">
+		count_pwd_errors=#{countPwdErrors},
+		</if>
+		<if test="userLockTime != null">
+		user_lock_time=#{userLockTime},
+		</if>
+		<if test="status != null and status != '' ">
+		status=#{status},
+		</if>
+		<if test="isFirstLogin != null and isFirstLogin != ''">
+		is_first_login = #{isFirstLogin}
+		</if>
+		
+		</trim>
+		where id=#{id}
+	</update>
+	<update id="updateUserByAdmin" parameterType="com.boss.core.db.User">
+	update j_user	
+	SET
+	    last_update_by = #{lastUpdateBy}
+		,last_update_time=#{lastUpdateTime}
+		,agent_level=#{agentLevel}
+		,insurcomp_id=#{insurcompId}
+		,parent_id=#{parentId}	
+		<if test="insurant != null">
+		,insurant=#{insurant}
+		</if>
+		<if test="username != null">
+		,username=#{username}
+		</if>
+		<if test="fullName != null">
+		,full_name=#{fullName}
+		</if>
+		<if test="isSendMail">
+		,is_send_mail=#{isSendMail}
+		</if>
+		<if test="idcardNo != null">
+		,idcard_no=#{idcardNo}
+		</if>
+		<if test="userMail != null">
+		,user_mail=#{userMail}
+		</if>
+		<if test="userMoidle != null">
+		,user_moidle=#{userMoidle}
+		</if>
+		<if test="userAddress != null">
+		,user_address=#{userAddress}
+		</if>	
+		<if test="userLockTime != null">
+		,user_lock_time=#{userLockTime}
+		</if>
+		<if test="status != null and status != '' ">
+		,status=#{status}
+		</if>
+		<if test="isAllowEcargo != null and isAllowEcargo != ''">
+		,is_allow_ecargo = #{isAllowEcargo}
+		</if>
+		where id=#{id}
+	</update>
+	<update id="updateStatus" parameterType="com.boss.core.db.User">
+	update j_user set status = #{status}
+
+		where id=#{id}
+	</update>
+	<select id="selectCountByUsername" parameterType="java.lang.String" resultType="java.lang.Integer">
+	  SELECT COUNT(1)  from j_user where username=#{username} and rowstate=1 and status !=0
+	</select>
+	
+	<select id="validatePolicyByUserId" parameterType="java.lang.String" resultType="java.lang.Integer">
+	SELECT 
+				COUNT(1)
+	FROM 
+				j_policy p
+	INNER JOIN 
+				j_user u
+	ON 
+				u.insurant = p.cust_name and  u.rowstate=1
+    WHERE 
+    		 	p.surplus_carNo_money >0
+     AND
+      		 	DATE_FORMAT(p.policy_end_date,'%Y%m%d') > DATE_FORMAT(NOW(),'%Y%m%d') 
+     AND
+             	u.id=#{id} 
+	</select>
+	
+	<select id="selectUserIsAllowEcargo" parameterType="java.lang.String" resultType="java.lang.String">
+	SELECT 
+				is_allow_ecargo 
+	FROM 
+				j_user 
+	WHERE 
+				id=#{userId}
+	</select>
+</mapper> 

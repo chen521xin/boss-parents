@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.MessageMapper">
+
+	<insert id="insertMessage" parameterType="com.boss.core.db.MessageInfo">
+       INSERT INTO j_message
+		(id,create_by,create_Time,last_update_by,last_update_time,rowstate,VERSION,VERSION,module_type,title,content,is_alerdy_read,message_type)
+		VALUES
+		(#{id},#{createBy},#{createTime},#{lastUpdateBy},#{lastUpdateTime},#{rowstate},#{version},#{moduleType},#{title},#{content},#{isAlerdyRead},#{messageType});
+	</insert> 
+	<select id="selectMessageByPage" parameterType="com.boss.core.db.MessageInfo" resultType="com.boss.core.db.MessageInfo">
+	SELECT 
+				id
+				,DATE_FORMAT(`create_Time`,'%Y%m%d') create_time
+				,title,content
+				,is_alerdy_read
+	FROM 
+				j_message
+	<where>
+	<if test="id != null">
+	AND          id = #{id}
+	</if>
+	<if test="moduleType != null">
+	AND 
+				module_type= #{moduleType}
+	</if>
+	<if test="messageType != null">
+	AND 
+				message_type= #{messageType}
+	</if>				
+	</where> 
+	</select>
+
+<insert id="updateMessage" parameterType="com.boss.core.db.MessageInfo">
+update j_message
+set
+  last_update_by  =#{lastUpdateBy}
+  last_update_time = #{lastUpdateTime}
+  is_alerdy_read = #{isAlreadyRead}
+  where id = #{id}
+</insert>
+</mapper>

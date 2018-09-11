@@ -1,0 +1,33 @@
+PRODUCER_TAG: ''
+
+server:
+    port: 11004
+
+spring:
+  application:
+    name: ${APP_NAME:boss-service-user}
+    instance_id: ${random.value}
+  profiles:
+    active: ${PROFILE:dev}
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: BOSS-CONFIG           
+        
+        
+eureka:
+  instance:
+    metadataMap:
+      instanceId: ${spring.application.name}:${spring.application.instance_id}
+    perferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    region: default
+    availabilityZones:
+      default: devZone
+    preferSameZone: false
+    serviceUrl:
+      devZone: ${SERVICE_URL:http://${BOSS_EUREKA_IP:127.0.0.1}:${BOSS_EUREKA_PORT:8761}/${register.name:eureka}/}
+

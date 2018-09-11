@@ -1,0 +1,84 @@
+sp:
+  app:
+    port: ${APP_PORT:11003}
+
+server:  
+  port: ${sp.app.port:11003}
+
+jdbc:
+  server: ${JDBC_SERVICE_IP:127.0.0.1}
+  port: ${JDBC_SERVICE_PORT:3306}
+  database: ${JDBC_DATABASE_NAME:boss}
+  url: jdbc:mysql://${jdbc.server}:${jdbc.port}/${jdbc.database}?useUnicode=true&characterEncoding=utf-8
+  driverClassName: ${JDBC_DRIVER_CLASS_NAME:com.mysql.jdbc.Driver}
+  userName: ${JDBC_USERNAME:boss}
+  password: ${JDBC_PASSWORD:111111}
+  maxWait: ${JDBC_MAX_WAIT:10000}
+  initialSize: ${JDBC_INITIALSIZE:1}
+  minIdle: ${JDBC_MINIDLE:1}
+  maxActive: ${JDBC_MIX_ACTIVE:1000}
+  logAbandoned: ${JDBC_LOG_ABANDONED:true}
+  removeAbandoned: ${JDBC_REMOVE_ABANDONED:true}
+  removeAbandonedTimeout: ${JDBC_REMOVE_ABANDONED_TIMEOUT:5000}
+  timeBetweenEvictionRunMillis: ${JDBC_SLAVE_TIMEBETWEENENVICTIONRUNMILLIS:60000}
+  minEvictableIdleTimeMillis: ${JDBC_SLAVE_MINEVICTABLEIDLETIMEMILLIS:30000}
+  validationQuery: ${JDBC_SLAVE_VALIDATIONQUERY:SELECT 'X'}
+  testWhileIdle: ${JDBC_SLAVE_TESTWHILEIDLE:true}
+  testOnBorrow: ${JDBC_SLAVE_TESTONBORROW:false}
+  testOnReturn: ${JDBC_SLAVE_TESTONRETURN:false}
+  poolPreparedStatements: ${JDBC_SLAVE_POOLPREPAREDSTATEMENTS:false}
+  maxPoolPreparedStatementPerConnectionSize: ${JDBC_SLAVE_MAXPOOLPREPAREDSTATEMENTPERCONNECTIONSIZE:20}
+  filters: ${JDBC_SLAVE_FILTERS:stat}
+  slave:
+    server: ${JDBC_SERVICE_IP:${jdbc.server}}
+    port: ${JDBC_SERVICE_PORT:${jdbc.port}}
+    database: ${JDBC_DATABASE_NAME:${jdbc.database}}
+    url: jdbc:mysql://${jdbc.slave.server}:${jdbc.slave.port}/${jdbc.slave.database}
+    driverClassName: ${JDBC_DRIVER_CLASS_NAME:com.mysql.jdbc.Driver}
+    userName: ${JDBC_USERNAME:${jdbc.userName}}
+    password: ${JDBC_PASSWORD:${jdbc.password}}
+    maxWait: ${JDBC_MAX_WAIT:10000}
+    initialSize: ${JDBC_INITIALSIZE:1}
+    minIdle: ${JDBC_MINIDLE:1}
+    maxActive: ${JDBC_MIX_ACTIVE:1000}
+    logAbandoned: ${JDBC_LOG_ABANDONED:true}
+    removeAbandoned: ${JDBC_REMOVE_ABANDONED:true}
+    removeAbandonedTimeout: ${JDBC_REMOVE_ABANDONED_TIMEOUT:5000}
+    timeBetweenEvictionRunMillis: ${JDBC_SLAVE_TIMEBETWEENENVICTIONRUNMILLIS:60000}
+    minEvictableIdleTimeMillis: ${JDBC_SLAVE_MINEVICTABLEIDLETIMEMILLIS:30000}
+    validationQuery: ${JDBC_SLAVE_VALIDATIONQUERY:SELECT 'X'}
+    testWhileIdle: ${JDBC_SLAVE_TESTWHILEIDLE:true}
+    testOnBorrow: ${JDBC_SLAVE_TESTONBORROW:false}
+    testOnReturn: ${JDBC_SLAVE_TESTONRETURN:false}
+    poolPreparedStatements: ${JDBC_SLAVE_POOLPREPAREDSTATEMENTS:false}
+    maxPoolPreparedStatementPerConnectionSize: ${JDBC_SLAVE_MAXPOOLPREPAREDSTATEMENTPERCONNECTIONSIZE:20}
+    filters: ${JDBC_SLAVE_FILTERS:stat}
+    
+  
+spring:
+  jpa:
+    show-sql: ${JPA_DEBUGGING:false}
+    
+
+management:
+  security:
+    enabled: ${MANAGEMENT_SECURITY_ENABLED:false}
+
+mybatis:
+    mapperLocations: classpath:com/boss/data/mapper/*.xml
+    configLocation: classpath:mybatis-config.xml   
+export:
+  count:
+    max: 10000
+    
+    
+file:
+  rootPath: ${ROOT_PATH:/images}    
+  
+email:
+  account: ${EMAIL_ACCOUNT:hong.lei@5610086.cn}
+  password: ${EMAIL_PASSWORD:7Bhw73urB5we7Lz5}
+  smtpHost: ${SMPT_HOST:smtp.exmail.qq.com}
+  ifAuth: ${IF_AUTH:true}
+  sendPort: ${SNED_PORT:465}
+  debug: ${DEBUG:true}

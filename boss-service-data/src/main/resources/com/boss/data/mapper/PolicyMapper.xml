@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.PolicyMapper">
+<select id="getPolicyByPolicyId" parameterType="java.lang.String" resultType="com.boss.core.db.Policy">
+	SELECT 
+		policy.*,
+		comp.id,
+		comp.full_name
+	FROM 
+		J_POLICY  policy
+	INNER JOIN
+		J_INSURCOMP comp
+	ON 
+		policy.insurcomp_id = comp.id
+	WHERE 
+		policy.ID = #{policyId}
+</select>
+<!--过滤条件  -->
+	<sql id="findByfilter">
+		<if test="id != null and id != ''">
+			AND policy.id = #{id}
+		</if>
+		<if test=" policyNo != null and policyNo != ''">
+			AND  LOCATE(#{policyNo},policy.policy_No) 
+		</if>
+		<if test=" custName != null and custName != ''">
+			AND LOCATE(#{custName},policy.cust_name)
+		</if>
+		<if test=" state != null and state != ''">
+			AND policy.state = #{state}
+		</if>
+		<if test=" userName != null and userName != ''">
+			AND LOCATE(#{userName},us.username)
+		</if>
+		<if test=" insurcompId != null and insurcompId != ''">
+			AND policy.insurcomp_id = #{insurcompId}
+		</if>
+		<if test=" productTypeValue != null and productTypeValue != ''">
+			AND product.product_type_value = #{productTypeValue}
+		</if>
+		ORDER BY policy.policy_start_date DESC,policy.policy_end_date DESC
+	</sql>
+	
+	<!--查询该表单是否存在  -->
+	<select id="getByPolicyNo" parameterType="java.lang.String" resultType="com.boss.core.db.Policy">
+	SELECT 
+		policy_no,
+		policy_total_money,
+		surplus_carNo_money,
+		state,
+		insurcomp_id
+	 FROM j_policy WHERE policy_no = #{policyNo}
+	</select>
+	<!--查询该保单是否存在  -->
+	<select id="getPolicyByProductId" parameterType="java.lang.String" resultType="java.lang.Integer">
+	SELECT COUNT(1) FROM j_policy WHERE rowstate = 1 AND state = 1 AND product_id = #{productId}
+	</select>
+	
+	
+	<!--分页查询  -->
+	<select id = "getByPage" parameterType="com.boss.core.db.Policy" resultType="com.boss.core.db.Policy">
+	SELECT 
+		policy.id
+		,us.full_name username
+		,us.id userId
+		,insu.full_name
+		,insu.id insurcompId
+		,product.amount
+		,product.id productId
+		,product.product_name  productName	
+		,policy.policy_no
+		,policy.remind_norm_expire_day
+		,policy.cust_name
+		,DATE_FORMAT(policy.policy_start_date,'%Y-%m-%d') policy_start_date
+		,DATE_FORMAT(policy.policy_end_date,'%Y-%m-%d') policy_end_date
+		,policy.total_carNo
+		,policy.surplus_carNo
+		,policy.policy_total_money
+		,policy.surplus_carNo_money
+		,policy.state
+		,DATE_FORMAT(policy.last_tdate,'%Y-%m-%d %k:%i:%s') last_tdate
+		,policy.primary_agency
+		,policy.secondary_agent
+		,policy.premiums
+		,policy.payment_amount
+		,policy.renbaoxishu
+		,policy.remind_norm_car
+		,policy.remind_norm_money
+		,product.product_type_value
+	FROM 
+		j_policy policy
+	INNER JOIN 
+		j_user us
+	ON 
+		us.id = policy.user_id
+	INNER JOIN 
+		j_insurcomp insu
+	ON 
+		insu.id = policy.insurcomp_id
+	INNER JOIN 
+		j_policy_product product
+	ON 
+		product.id = policy.product_id
+	WHERE 
+		policy.rowstate = 1
+	<include refid="findByfilter"/>
+	</select>
+	
+	<!--根据角色查询之代理查询  -->
+	<select id="findByRolePoxy" parameterType="com.boss.core.db.Policy" resultType="com.boss.core.db.Policy">
+	SELECT 
+		insurcomp.full_name,
+		us.full_name username,
+		product.amount,
+		policy.state,
+		policy.policy_no,
+		policy.cust_name,
+		DATE_FORMAT(policy.policy_start_date,'%Y-%m-%d') policy_start_date,
+		DATE_FORMAT(policy.policy_end_date,'%Y-%m-%d') policy_end_date,
+		policy.total_carNo,
+		policy.surplus_carNo,
+		policy.policy_total_money,
+		policy.surplus_carNo_money,
+		DATE_FORMAT(policy.last_tdate,'%Y-%m-%d %k:%i:%s') last_tdate,
+		policy.primary_agency,
+		policy.secondary_agent,
+		policy.premiums,
+		policy.payment_amount,
+		policy.renbaoxishu	
+	FROM 
+		j_policy policy 
+	INNER JOIN  
+		j_user us
+	ON 
+		us.id = policy.user_id
+	AND 
+		us.parent_id = #{userId}
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		policy.insurcomp_id = insurcomp.id
+	INNER JOIN 
+		j_policy_product product
+	ON 
+		product.id = policy.product_id
+	WHERE 
+		policy.rowstate = 1
+	<include refid="findByfilter"/>
+	</select>
+	<!--根据角色查询之保险员查询  -->
+	<select id="findByRoleInsurance" parameterType="com.boss.core.db.Policy" resultType="com.boss.core.db.Policy">
+	SELECT 
+		insurcomp.full_name,
+		us.full_name username,
+		product.amount,
+		policy.state,
+		policy.policy_no,
+		policy.cust_name,
+		DATE_FORMAT(policy.policy_start_date,'%Y-%m-%d') policy_start_date,
+		DATE_FORMAT(policy.policy_end_date,'%Y-%m-%d') policy_end_date,
+		policy.total_carNo,
+		policy.surplus_carNo,
+		policy.policy_total_money,
+		policy.surplus_carNo_money,
+		DATE_FORMAT(policy.last_tdate,'%Y-%m-%d %k:%i:%s') last_tdate,
+		policy.primary_agency,
+		policy.secondary_agent,
+		policy.premiums,
+		policy.payment_amount,
+		policy.renbaoxishu	
+	FROM 
+		j_policy policy 
+	INNER JOIN  
+		j_user us
+	ON
+		us.id = policy.user_id
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		policy.insurcomp_id = insurcomp.id
+	AND
+		insurcomp.id = #{insurcompId}
+	INNER JOIN 
+		j_policy_product product
+	ON 
+		product.id = policy.product_id
+	WHERE 
+		policy.rowstate = 1
+	<include refid="findByfilter"/>
+	</select>
+	<!--根据角色查询之个人查询  -->
+	<select id="getPolicyByUserIds" parameterType="java.lang.String" resultType="com.boss.core.db.Policy">
+	SELECT 
+		policy.id,
+		insurcomp.full_name,
+		us.full_name username,
+		product.amount,
+		policy.state,
+		policy.policy_no,
+		policy.cust_name,
+		DATE_FORMAT(policy.policy_start_date,'%Y-%m-%d') policy_start_date,
+		DATE_FORMAT(policy.policy_end_date,'%Y-%m-%d') policy_end_date,
+		policy.total_carNo,
+		policy.surplus_carNo,
+		policy.policy_total_money,
+		policy.surplus_carNo_money,
+		DATE_FORMAT(policy.last_tdate,'%Y-%m-%d %k:%i:%s') last_tdate,
+		policy.primary_agency,
+		policy.secondary_agent,
+		policy.premiums,
+		policy.payment_amount,
+		policy.renbaoxishu	
+	FROM 
+		j_policy policy 
+	INNER JOIN  
+		j_user us 
+	ON 
+		us.id = policy.user_id
+	AND 
+		us.id = #{userId}
+	INNER JOIN 
+		j_insurcomp insurcomp
+	ON
+		policy.insurcomp_id = insurcomp.id
+	INNER JOIN 
+		j_policy_product product
+	ON 
+		product.id = policy.product_id
+	WHERE
+		policy.state = 1
+	AND 
+		policy.rowstate = 1
+	ORDER BY
+		policy.last_update_time
+	DESC
+	</select>
+	<!--用户投保之可用保单查询  -->
+	<select id="getPolicyByUserId" parameterType="com.boss.core.pojo.InsurcompAndPolicyType" resultType="com.boss.core.db.Policy">
+	SELECT 
+		policy.id,
+		product.product_type_value,
+		product.amount,
+		policy.product_id,
+		policy.product_id,
+		policy.policy_no,
+		policy.cust_name,
+		policy.policy_pay_height,
+		DATE_FORMAT(policy.policy_start_date,'%Y-%m-%d') policy_start_date,
+		DATE_FORMAT(policy.policy_end_date,'%Y-%m-%d') policy_end_date,
+		policy.total_carNo,
+		policy.surplus_carNo,
+		policy.policy_total_money,
+		policy.surplus_carNo_money,
+		policy.renbaoxishu
+	FROM 
+		j_policy policy
+	INNER JOIN 
+		j_policy_product product
+	ON 
+		policy.product_id = product.id
+	AND
+		product.product_type_value = #{isInsured}
+	INNER JOIN 
+		j_user us
+	ON 
+		us.id = policy.user_id
+	AND
+		us.id = #{userId}
+	WHERE
+		policy.state = 1
+	AND 
+		policy.rowstate = 1
+	AND 
+		policy.insurcomp_id = #{insurcompId} 
+	ORDER BY
+		policy.last_update_time
+	DESC
+	</select>
+	
+	<!--新增保单  -->
+	<insert id = "addPolicy" parameterType="com.boss.core.db.Policy">
+	INSERT INTO 
+		j_policy
+		(
+		id,
+		create_time,
+		create_by,
+		last_update_time,
+		last_update_by,
+		rowstate,
+		version,
+		user_id,
+		insurcomp_id,
+		product_id,
+		policy_no,
+		cust_name,
+		policy_pay_height,
+		policy_start_date,
+		policy_end_date,
+		total_carNo,
+		surplus_carNo,
+		policy_total_money,
+		surplus_carNo_money,
+		state,
+		last_tdate,
+		remind_norm_car,
+		remind_norm_money,
+		remind_norm_expire_day,
+		primary_agency,
+		secondary_agent,
+		premiums,
+		payment_amount,
+		renbaoxishu
+		) 
+	VALUE(
+		#{id},
+		#{createTime},
+		#{createBy},
+		#{lastUpdateTime},
+		#{lastUpdateBy},
+		#{rowstate},
+		#{version},
+		#{userId},
+		#{insurcompId},
+		#{productId},
+		#{policyNo},
+		#{custName},
+		#{policyPayHeight},
+		#{policyStartDate},
+		#{policyEndDate},
+		#{totalCarNo},
+		#{surplusCarNo},
+		#{policyTotalMoney},
+		#{surplusCarNoMoney},
+		#{state},
+		#{lastTdate},
+		#{remindNormCar},
+		#{remindNormMoney},
+		#{remindNormExpireDay},
+		#{primaryAgency},
+		#{secondaryAgent},
+		#{premiums},
+		#{paymentAmount},
+		#{renBaoXiShu}
+		)
+	</insert>
+	<!--补添保额  -->
+	<update id="updatePolicyBalance" parameterType="com.boss.core.pojo.PolicyPojo">
+	UPDATE
+				j_policy
+	SET
+				last_update_by = #{lastUpdateBy}
+				,last_update_time = #{lastUpdateTime}
+		<choose>
+			<when test="policyTotalMoney != null and policyTotalMoney != ''">
+				,policy_total_money = #{policyTotalMoney}
+				,surplus_carNo_money = #{surplusCarNoMoney}
+				,state = #{state}
+			</when>
+			<when test="surplusCarNo != null and surplusCarNo != ''">
+				,surplus_carNo = #{surplusCarNo}
+				,last_tdate = #{lastTdate}
+				,state = #{state}
+			</when>
+			<otherwise>
+				,surplus_carNo_money = #{surplusCarNoMoney}
+				,last_tdate = #{lastTdate}
+				,state = #{state}
+			</otherwise>
+		</choose>
+	WHERE
+		policy_no = #{policyNo}
+	</update>
+	
+	
+	<!--管理员更新保单管理  -->
+	<update id="updatePolicy" parameterType="com.boss.core.db.Policy">
+	UPDATE 
+		j_policy 
+	SET
+		last_update_time = #{lastUpdateTime},
+		last_update_by = #{lastUpdateBy},
+		user_id = #{userId},
+		insurcomp_id = #{insurcompId},
+		product_id = #{productId},
+		policy_no = #{policyNo},
+		cust_name = #{custName},
+		policy_pay_height = #{policyPayHeight},
+		policy_start_date = #{policyStartDate},
+		policy_end_date = #{policyEndDate},
+		total_carNo = #{totalCarNo},
+		surplus_carNo = #{surplusCarNo},
+		policy_total_money = #{policyTotalMoney},
+		surplus_carNo_money = #{surplusCarNoMoney},
+		state = #{state},
+		remind_norm_car = #{remindNormCar},
+		remind_norm_money = #{remindNormMoney},
+		remind_norm_expire_day = #{remindNormExpireDay},
+		premiums = #{premiums},
+		payment_amount = #{paymentAmount},
+		renbaoxishu = #{renBaoXiShu}
+	WHERE  
+		id = #{id}
+	</update>
+	
+	<!--逻辑删除保单  -->
+	<update id="deletePolicy" parameterType="java.lang.String">
+	UPDATE 
+		j_policy 
+	SET
+		rowstate = 0
+	WHERE
+		id = #{id}
+	</update>
+	
+	<select id="selectPolicyBy"  resultType="com.boss.core.db.Policy">
+	SELECT 
+				`policy_no`
+				,`cust_name`
+				,`policy_total_money`
+				,`surplus_carNo_money`
+				,`remind_norm_money` 
+	FROM 
+				`j_policy`
+    WHERE 
+    		 `surplus_carNo_money` &lt;= `remind_norm_money`
+    AND
+      		 DATE_FORMAT(`policy_end_date`,'%Y%m%d') &gt;= DATE_FORMAT(NOW(),'%Y%m%d')  
+	</select>
+	
+		<select id="selectLimitPolicy"  resultType="com.boss.core.db.Policy">
+	SELECT 
+				 p.policy_no
+				,p.cust_name
+				,p.policy_total_money
+				,p.surplus_carNo_money
+				,u.is_send_mail
+				,u.user_mail
+	FROM 
+				j_policy p
+	INNER JOIN 
+				j_user u
+	ON 
+				 u.insurant = p.cust_name
+    WHERE 
+    		 p.surplus_carNo_money &lt;= p.remind_norm_money
+     AND
+      		 DATE_FORMAT(p.policy_end_date,'%Y%m%d') &gt;= DATE_FORMAT(NOW(),'%Y%m%d')  		 
+	</select>
+		
+	<select id="selectExpirePolicy"  resultType="com.boss.core.db.Policy">
+	SELECT 
+				 p.policy_no
+				,p.cust_name
+				,p.policy_start_date
+				,p.policy_end_date
+				,u.is_send_mail
+				,u.user_mail
+	FROM 
+				j_policy p
+	INNER JOIN 
+				j_user u
+	ON 
+				 u.insurant = p.cust_name
+	WHERE 
+				 p.surplus_carNo_money &gt; 0 
+	AND
+				 DATE_FORMAT(NOW(),'%Y%m%d') &gt;= DATE_SUB(DATE_FORMAT(p.policy_end_date,'%Y%m%d'),INTERVAL p.remind_norm_expire_day DAY) 
+	AND 
+				DATE_FORMAT(NOW(),'%Y%m%d') &lt;= DATE_FORMAT(p.policy_end_date,'%Y%m%d')
+
+	</select>
+	<!-- 根据userId查询用户信息 -->
+	<select id = "findUserByUserId" parameterType="java.lang.String" resultType="com.boss.core.db.User">
+		SELECT 
+			username,
+			user_mail 
+		FROM 
+			j_user 
+		WHERE 
+			id = #{userId}
+		AND
+			is_send_mail = 1		
+	</select>
+	<!-- 根据policyId查询保险员信息 -->
+	<select id = "findUserByPolicyId" parameterType="java.lang.String" resultType="com.boss.core.db.User">
+		SELECT 
+			u.username,
+			u.user_mail
+		FROM 
+			j_policy p 
+		INNER JOIN 
+			j_user u 
+		ON 
+			p.insurcomp_id = u.insurcomp_id 
+		AND 
+			u.rowstate = 1 
+		AND 
+			u.is_send_mail = 1 
+		AND  
+			p.id = #{policyId}
+	</select>
+	<!--根据角色名查询管理员信息  -->
+	<select id = "findUserByRoleName" resultType="com.boss.core.db.User">
+		SELECT 
+			u.username,
+			u.user_mail 
+		FROM  
+			j_user u 
+		INNER JOIN 
+			j_user_role ur 
+		ON  
+			u.id = ur.user_id 
+		AND 
+			u.rowstate = 1 
+		AND 
+			u.is_send_mail = 1
+		AND 
+			ur.rowstate = 1 
+		INNER JOIN 
+			j_role r 
+		ON 
+			ur.role_id = r.id 
+		AND 
+			r.rowstate = 1 
+		WHERE 
+			r.role_code = 'ROLE_ADMIN'
+	</select>
+	<update id ="thePolicyExpiration">
+		UPDATE
+			j_policy p
+		SET 
+			state = '2'
+		WHERE  
+				DATE_FORMAT(p.policy_end_date,'%Y-%m-%d') &lt; DATE_FORMAT(NOW(),'%Y-%m-%d')
+		AND
+				state = '1' 
+		OR
+				state = '3'
+		OR
+				state = '4'
+		OR
+				state = '5'
+	</update>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.FileMapper">
+
+	<insert id="insertFile" parameterType="com.boss.core.db.FileInfo">
+		INSERT INTO j_file
+		(id,create_by,create_Time,last_update_by,last_update_time,rowstate,VERSION,file_path,file_name,biz_id,file_type,module_type)
+		VALUES
+		(#{id},#{createBy},#{createTime},#{lastUpdateBy},#{lastUpdateTime},#{rowstate},#{version},#{filePath},#{fileName},#{bizId},#{fileType},#{moduleType});
+
+
+	</insert> 
+	<select id="selectIdByBizId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT id FROM j_file WHERE biz_id=#{bizID}
+	</select>
+	
+	<delete id="deleteFileById" parameterType="java.lang.String">
+        delete from j_file where id=#{id}
+	</delete>
+	
+	<delete id="deleteFileByBizId" parameterType="java.lang.String">
+        delete from j_file where biz_id=#{bizID}
+	</delete>
+	<update id="udpateFileById" parameterType="com.boss.core.db.FileInfo">
+        update j_file
+        set 
+               last_update_by = #{lastUpdateBy}
+               ,last_update_time = #{lastUpdateTime}
+            <if test="rowstate  != null" >
+               ,rowstate = #{rowstate}
+            </if>
+            <if test="filePath != null" >
+               ,file_path = #{filePath}
+            </if>
+            <if test="fileName  != null" >
+               ,file_name = #{fileName}
+            </if>
+            <if test="fileType != null" >
+               ,file_type = #{fileType}
+            </if>
+            <if test="moduleType != null" >
+               ,module_type = #{moduleType}
+            </if>
+            <if test="bizId != null" >
+               ,biz_id = #{bizId}
+            </if>
+        where 
+               id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,51 @@
+sp:
+  app:
+    port: ${APP_PORT:11002}
+    
+server:
+    port: ${sp.app.port:11002}
+ 
+ribbon:
+  eureka:
+    enabled: true
+
+zuul:
+  routes:
+    boss-service-data:
+      path: /data/**
+      serviceId: boss-service-data${PRODUCER_TAG:}
+    boss-service-user:
+      path: /user/**
+      serviceId: boss-service-user${PRODUCER_TAG:}
+    boss-service-ecargo:
+      path: /ecargo/**
+      serviceId: boss-service-ecargo${PRODUCER_TAG:} 
+  sensitiveHeaders:
+  host:
+    maxTotalConnections: ${ZUUL_HOST_MAXTOTALCONNECTIONS:10000}
+    maxPerRouteconnections: ${ZUUL_HOST_MAXPERROUTECONNECTIONS:50}
+
+management:
+  security:
+    enabled: ${MANAGEMENT_SECURITY_ENABLED:false}
+   
+spring:
+  redis:
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:0}
+
+redis:
+  expire:
+    time: ${REDIS_EXPIRE_TIME:3600}
+
+jwt:
+  token:
+    secret: ${TOKEN_SECRET:THISISSECRET}   
+    expiration: ${TOKEN_EXPIRATION:3600}
+    
+auth:
+  interface:
+    control: ${AUTH_INTERFACE_CONTROL:true}
+    

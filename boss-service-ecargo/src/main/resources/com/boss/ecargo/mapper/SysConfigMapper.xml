@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.ecargo.mapper.SysConfigMapper">
+
+	<insert id="insertSysconfig" parameterType="com.boss.core.db.SysConfig">
+INSERT INTO
+		J_SYS_CONFIG(
+		id
+		,create_time
+		,create_by
+		,last_update_time
+		,last_update_by
+		,rowstate
+		,`version`
+		,PAM_BUZ_TYPE
+		,PAM_CODE
+		,PAM_CODE_NAME
+		,PAM_CODE_VALUE
+		,PAM_CODE_INFO
+		)
+	VALUE
+		(
+		#{id}
+		,#{createTime}
+		,#{createBy}
+		,#{lastUpdateTime}
+		,#{lastUpdateBy}
+		,#{rowstate}
+		,#{version}
+		,#{pamBuzType}
+		,#{pamCode}
+		,#{pamCodeName}
+		,#{pamCodeValue}
+		,#{pamCodeInfo}
+		)
+	</insert>
+	
+	<select id="selectSysConfig" parameterType="com.boss.core.db.SysConfig" resultType="com.boss.core.db.SysConfig" >
+	  SELECT 
+		id
+		,last_update_time
+		,rowstate
+		,`version`
+		,PAM_BUZ_TYPE
+		,PAM_CODE
+		,PAM_CODE_NAME
+		,PAM_CODE_VALUE
+		,PAM_CODE_INFO
+	FROM J_SYS_CONFIG
+	<where>
+	    rowstate=1
+	<if test='pamBuzType != null'>
+	AND PAM_BUZ_TYPE=#{pamBuzType}
+	</if>
+		<if test='pamCode != null'>
+	AND PAM_CODE=#{pamCode}
+	</if>
+	<if test='pamCodeName != null'>
+	AND PAM_CODE_VALUE=#{pamCodeName}
+	</if>
+	 <if test='pamCodeValue != null'>
+	AND PAM_CODE_NAME=#{pamCodeValue}
+	</if>   		
+	</where> 
+	</select>
+	<update id="updateSysConfig" parameterType="com.boss.core.db.SysConfig">
+	
+	UPDATE J_SYS_CONFIG
+     SET 
+	  last_update_time=#{lastUpdateTime}
+	, last_update_by=#{lastUpdateBy}
+	<if test='pamBuzType != null'>
+	, PAM_BUZ_TYPE=#{pamBuzType}
+	</if>
+	<if test='pamCode != null'>
+	, PAM_CODE=#{pamCode}
+	</if>
+	<if test='pamCodeName != null'>
+	, PAM_CODE_VALUE=#{pamCodeName}
+	</if>
+	 <if test='pamCodeValue != null'>
+	, PAM_CODE_NAME=#{pamCodeValue}
+	</if>   
+	 <if test='pamCodeInfo != null'>
+	, PAM_CODE_INFO=#{pamCodeInfo}
+	</if> 	
+	where id=#{id}
+	</update>
+	
+	<delete id="deleteSysConfig" parameterType="com.boss.core.db.SysConfig">
+	UPDATE j_sys_config set 	
+	 last_update_time=#{lastUpdateTime}
+	, last_update_by=#{lastUpdateBy}
+	,rowstate=0 where id=#{id}
+	</delete>
+</mapper>

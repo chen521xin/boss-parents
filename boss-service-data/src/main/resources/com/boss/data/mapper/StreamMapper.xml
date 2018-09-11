@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.data.mapper.StreamMapper">
+	<insert id="insertStream" parameterType="com.boss.core.db.Stream">
+				INSERT INTO
+					j_stream(
+					id,
+					create_time,
+					create_by,
+					last_update_time,
+					last_update_by,
+					rowstate,
+					`version`,
+					before_balance,
+					accrual,
+					after_balance,
+					direction_of,
+					policy_no
+					)
+				VALUE
+					(
+					#{id},
+					#{createTime},
+					#{createBy},
+					#{lastUpdateTime},
+					#{lastUpdateBy},
+					#{rowstate},
+					#{version},
+					#{beforeBalance},
+					#{accrual},
+					#{afterBalance},
+					#{directionOf},
+					#{policyNo}
+					)
+	</insert>
+</mapper>
